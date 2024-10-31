@@ -3,6 +3,8 @@ import customtkinter as ctk
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
  
+puzzle1 = "-3x0000x00000x07000200x-10900x000x000-400x04x00x008-603x000000x000000900x01xx0000-200-5"
+
 class App (ctk.CTk):
     def __init__(self, title, size, **kwargs):
        
@@ -19,6 +21,8 @@ class App (ctk.CTk):
         self.Controls = Controls(self, 0.7, 0, "black", 0.3, 0.65)
         self.Controls = Solver(self, 0, 0.7, "green", 0.65, 0.3)
 
+       
+
         #run
         self.mainloop()
 
@@ -32,7 +36,8 @@ class Puzzle(ctk.CTkFrame):
         
         #puzzle frame
         frame = ctk.CTkFrame(self, )
-        
+        contentcounter = 0
+  
         for row in range(9):
              for col in range(9):
 
@@ -40,9 +45,28 @@ class Puzzle(ctk.CTkFrame):
                 frame.grid_columnconfigure(col, weight=1)
 
                 cell = ctk.CTkEntry(frame, width = 40, height = 40, font=("Arial", 24), justify = "center")
-                #placeholder filling of grid
-                #cell.insert(0, "1")
-                cell.grid(row = row, column = col, fill = None)
+
+                content = puzzle1[contentcounter]
+                if content == "x":
+                    cell.configure(fg_color = "black", text_color = "white", state = "disabled")
+                elif content == "0":
+                     cell.configure(fg_color = "white", text_color = "black")
+                elif content == "-":
+                    contentcounter = contentcounter + 1
+                    content = puzzle1[contentcounter]
+                    cell.insert(0, content)    
+                    cell.configure(fg_color = "black", text_color = "white", state = "disabled")
+                else:     
+                    cell.insert(0, content)
+                    cell.configure(fg_color = "white" , text_color = "black")
+                    cell.configure
+
+
+                cell.grid(row = row, column = col, fill = None,)
+                                
+                contentcounter = contentcounter + 1
+
+                
 
        
         frame.pack(expand = False, fill= None, anchor = "nw", padx = 10, pady = 10)
@@ -88,7 +112,7 @@ class Solver(ctk.CTkFrame):
         button_solve.grid(row = 0, column = 0, fill = None)
         button_load.grid(row = 1, column = 0, fill = None)
 
-       
+
         frame.pack(expand = False, fill= None, anchor = "center", padx = 10, pady = 10)
 
 App("Str8ts Solver", (500,500))
