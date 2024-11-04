@@ -4,7 +4,7 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
  
 puzzle1 = "-3x0000x00000x07000200x-10900x000x000-400x04x00x008-603x000000x000000900x01xx0000-200-5"
-
+puzzle_grid = []
 class App (ctk.CTk):
     def __init__(self, title, size, **kwargs):
        
@@ -20,37 +20,41 @@ class App (ctk.CTk):
         self.Puzzle = Puzzle(self, 0, 0, "green", 0.65, 0.65)
         self.Controls = Controls(self, 0.7, 0, "black", 0.3, 0.65)
         self.Controls = Solver(self, 0, 0.7, "green", 0.65, 0.3)
-
+        print(puzzle_grid)
        
 
         #run
         self.mainloop()
 
 class Puzzle(ctk.CTkFrame):
+    
     def __init__(self, parent, x, y, colour, rwidth,  rheight, **kwargs):
         
         #setup frame
         super().__init__(parent, **kwargs)
         self.place(relx = x, rely= y, relwidth = rwidth, relheight = rheight)
-    
+        self.selected_entry = None
+        self.create_grid()
         
+    def create_grid(self):
         #puzzle frame
         frame = ctk.CTkFrame(self, )
         contentcounter = 0
-  
+
         for row in range(9):
-             for col in range(9):
+            current_row = []
+            for col in range(9):
 
                 frame.grid_rowconfigure(row, weight=1)
                 frame.grid_columnconfigure(col, weight=1)
-
                 cell = ctk.CTkEntry(frame, width = 40, height = 40, font=("Arial", 24), justify = "center")
-
+                cell.bind("<FocusIn>", self.on_click)
                 content = puzzle1[contentcounter]
+                current_row.append(content) 
                 if content == "x":
                     cell.configure(fg_color = "black", text_color = "white", state = "disabled")
                 elif content == "0":
-                     cell.configure(fg_color = "white", text_color = "black")
+                    cell.configure(fg_color = "white", text_color = "black")
                 elif content == "-":
                     contentcounter = contentcounter + 1
                     content = puzzle1[contentcounter]
@@ -58,18 +62,21 @@ class Puzzle(ctk.CTkFrame):
                     cell.configure(fg_color = "black", text_color = "white", state = "disabled")
                 else:     
                     cell.insert(0, content)
-                    cell.configure(fg_color = "white" , text_color = "black")
-                    cell.configure
-
-
-                cell.grid(row = row, column = col, fill = None,)
-                                
+                    cell.configure(fg_color = "white" , text_color = "black", state = "disabled")
+                
+                cell.grid(row = row, column = col, fill = None,)           
                 contentcounter = contentcounter + 1
 
-                
+            puzzle_grid.append(current_row)    
 
-       
         frame.pack(expand = False, fill= None, anchor = "nw", padx = 10, pady = 10)
+    
+    #select entry with mouse
+    def on_click(self, event):
+        self.selected_entry = event.widget
+        print("selected a cell")
+        
+
 
 class Controls(ctk.CTkFrame):
     def __init__(self, parent, x, y, colour, rwidth, rheight, **kwargs):
