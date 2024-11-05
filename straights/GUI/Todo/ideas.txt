@@ -1,0 +1,6 @@
+Grid view für notes ohne backend in entries
+button zum wechsel
+
+funktion für eingabe in entry und backend veralgemeinern
+button für puzzle laden
+puzzle als doc speichern
