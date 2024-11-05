@@ -2,4 +2,4 @@ venv/
 Lib/
 Scripts/
 pyvenv.cfg
-GUI/__pycache__/
+__pycache__/
