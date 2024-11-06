@@ -31,7 +31,7 @@ class Grid(ctk.CTkFrame):
                 cell = Cell(border_frame, xcoord = row, ycoord = col, width = 70, height = 70, font = ("Arial", 50),justify = "center",)
 
                 #bind functionality to the cells
-                cell.bind("<FocusIn>", lambda event, frame=border_frame, row = row, col = col, cell = cell: self.on_click_in(event, frame, row, col, cell))
+                cell.bind("<FocusIn>", lambda event, frame=border_frame, cell = cell: self.on_click_in(event, frame, cell))
                 cell.bind("<FocusOut>", lambda event, frame=border_frame: self.on_click_out(event, frame))
                 cell.bind("<KeyRelease-BackSpace>", self.on_delete)
                 cell.bind("<KeyRelease-Delete>", self.on_delete)
@@ -50,12 +50,10 @@ class Grid(ctk.CTkFrame):
     
     
     #select entry with mouse, indicate visually
-    def on_click_in(self, event, frame,x ,y, cell):
+    def on_click_in(self, event, frame, cell):
         frame.configure(fg_color = "lightgreen")
         self.selected_cell = cell
-        #print(self.selected_entry)
-        #print(cell.x) 
-        #print("selected a cell")
+
 
     #needed for losing focus 
     def on_click_out(self, event, frame):

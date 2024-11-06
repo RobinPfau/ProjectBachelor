@@ -4,9 +4,10 @@ from .grid import Grid
 from .controls import Controls
 from .matrix import Matrix
 from converter import Converter
+import json
 
-puzzle3 = [-3,0,None,None,None,None,0,None,None,None,None,None,0,None,7,None,None,None,2,None,None,0,-1,None,9,None,None,0,None,None,None,0,None,None,None,-4,None,None,0,None,5,0,None,None,0,None,None,8,-6,None,3,0,None,None,None,None,None,None,0,None,None,None,None,None,None,-9,None,None,0,None,2,0,0,None,None,None,None,-2,None,None,-5]
-puzzle4 = "000000009000000060930000000000004000003000000000720000090000200000000010100000020000000011000000000000000000011001100001100011000000000000001000001000000100000000"
+puzzle0 = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+print(len(puzzle0))
 class App (ctk.CTk):
     def __init__(self, title, size, **kwargs):
        
@@ -21,13 +22,19 @@ class App (ctk.CTk):
         self.resizable(False, False)
 
         # creates the UI Parts in the app
+        #create and use converter
+        with open("puzzles.json", "r") as file:
+            puzzles = json.load(file)
         self.converter = Converter()
-        puzzlelist = self.converter.convert(puzzle4)
+        puzzlelist = self.converter.convert(puzzles["symmetric"]["easy"]["03.11.24"])
 
+        #create Matrix that stores the puzzle
         self.matrix = Matrix(puzzlelist)
+        #create GUI
+
         self.grid = Grid(self, 0, 0, "green", 0.65, 1, self.matrix)
         self.controls = Controls(self, 0.7, 0, "black", 0.3, 0.65, self.grid, self.matrix)
-    
+        
 
 
         #self.solver = Solver(self, 0, 0.7, "green", 0.65, 0.3)
