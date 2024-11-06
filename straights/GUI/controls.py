@@ -130,7 +130,7 @@ class Controls(ctk.CTkFrame):
 
     # TODO: start the solver and load solution into grid
     def on_press_solve(self):
-        self.matrix.update_matrix(1,1,7)
+        pass
 
     # TODO: offer a not yet defined help
     def on_press_help(self):
