@@ -12,20 +12,23 @@ class Grid(ctk.CTkFrame):
         self.selected_cell = None
         self.matrix = matrix
         self.create_grid()
+        
+    def delete_grid(self):
+        self.frame.destroy()
 
 
     def create_grid(self):
         #puzzle frame
-        frame = ctk.CTkFrame(self)
+        self.frame = ctk.CTkFrame(self)
                 
         for row in range(9):
             rowlist = self.matrix.grid[row]
-            frame.grid_rowconfigure(row, weight=1)
+            self.frame.grid_rowconfigure(row, weight=1)
         
             for col in range(9):
-                frame.grid_columnconfigure(col, weight=1)
+                self.frame.grid_columnconfigure(col, weight=1)
                 
-                border_frame = ctk.CTkFrame(frame, fg_color = "white")
+                border_frame = ctk.CTkFrame(self.frame, fg_color = "white")
                 border_frame.grid(row=row, column=col, fill = None )          
                 
                 cell = Cell(border_frame, xcoord = row, ycoord = col, width = 70, height = 70, font = ("Arial", 50),justify = "center",)
@@ -46,7 +49,7 @@ class Grid(ctk.CTkFrame):
                 #cell.grid(row = row, column = col, fill = None,) 
                 
   
-        frame.pack(expand = False, fill= None, anchor = "nw", padx = 20, pady = 20)
+        self.frame.pack(expand = False, fill= None, anchor = "nw", padx = 20, pady = 20)
     
     
     #select entry with mouse, indicate visually
