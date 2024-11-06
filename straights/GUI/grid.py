@@ -11,6 +11,7 @@ class Grid(ctk.CTkFrame):
         self.place(relx = x, rely= y, relwidth = rwidth, relheight = rheight)
         self.selected_cell = None
         self.matrix = matrix
+        self.cells = {}
         self.create_grid()
         
     def delete_grid(self):
@@ -33,6 +34,7 @@ class Grid(ctk.CTkFrame):
                 
                 cell = Cell(border_frame, xcoord = row, ycoord = col, width = 70, height = 70, font = ("Arial", 50),justify = "center",)
 
+                self.cells[row,col] = cell
                 #bind functionality to the cells
                 cell.bind("<FocusIn>", lambda event, frame=border_frame, cell = cell: self.on_click_in(event, frame, cell))
                 cell.bind("<FocusOut>", lambda event, frame=border_frame: self.on_click_out(event, frame))
@@ -46,22 +48,20 @@ class Grid(ctk.CTkFrame):
                 cell.configure(fg_color = content.color, text_color = content.get_text_color(), state = content.get_state())
                 
                 cell.pack(padx = 1,pady = 1)
+                
                 #cell.grid(row = row, column = col, fill = None,) 
                 
   
         self.frame.pack(expand = False, fill= None, anchor = "nw", padx = 20, pady = 20)
-    
     
     #select entry with mouse, indicate visually
     def on_click_in(self, event, frame, cell):
         frame.configure(fg_color = "lightgreen")
         self.selected_cell = cell
 
-
     #needed for losing focus 
     def on_click_out(self, event, frame):
         frame.configure(fg_color = "white")
-
 
     #functionality on typing in cell, update visual and matrix
     def on_entry(self, event):
@@ -76,12 +76,13 @@ class Grid(ctk.CTkFrame):
             if event.char.isdigit() and event.char != "0":
                 cell.insert(0, event.char)
                 self.matrix.grid[x][y].value = int(event.char)
-                #print(self.matrix.grid[x][y])
+                
                 print(self.matrix.grid[x][y].value)
 
             elif current_value in "123456789":
                 cell. insert(0, current_value)
 
+    #button function that deletes value in highlighted cell
     def on_delete(self, event):
         x = self.selected_cell.x
         y = self.selected_cell.y
@@ -97,3 +98,10 @@ class Grid(ctk.CTkFrame):
         print("löscher")
         # enter the value into backend
         #print(event.char)    
+
+    #update the displayed value in a cell
+    def update_cell(self, row, col, value):
+        cell = self.cells.get((row, col))
+        
+        cell.delete(0, "end")
+        cell.insert(0, str(value))
