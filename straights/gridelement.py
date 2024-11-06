@@ -16,7 +16,4 @@ class GridElement():
             return "normal"
         else:
             return "disabled" 
-            print("wiso nix normal")
-
-
-            
+            print("wiso nix normal")           
