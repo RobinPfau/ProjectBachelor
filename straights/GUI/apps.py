@@ -27,8 +27,8 @@ class App (ctk.CTk):
         with open("puzzles.json", "r") as file:
             self.puzzles = json.load(file)
 
-        #puzzlelist = self.converter.convert(self.puzzles["asymmetric"]["hard"]["03.11.24"])
         puzzlelist = self.converter.convert(puzzle0)
+        #puzzlelist = self.converter.convert(self.puzzles["symmetric"]["hard"]["05.11.24"])
 
         #create Matrix that stores the puzzle
         self.matrix = Matrix(puzzlelist)
