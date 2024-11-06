@@ -34,17 +34,21 @@ class Controls(ctk.CTkFrame):
 
     #creates the delete button and maybe more
     def create_control_buttons(self):
-        button = ctk.CTkButton(self, text = "DELETE" ,command=  lambda: self.on_press_delete())
-        button.pack()
+        button_delete = ctk.CTkButton(self, text = "DELETE" ,command=  lambda: self.on_press_delete())
+        button_delete.pack(padx = 10, pady= 10)
+
+        button_load = ctk.CTkButton(self, text = "LOAD" ,command=  lambda: self.on_press_load())
+        button_load.pack(padx = 10, pady= 10)
          
     #functionality of the delete button
     def on_press_delete(self):
         focused_cell = self.grid.selected_cell
         if focused_cell is not None:
-            focused_cell.delete(0, "end")
-            self.matrix.grid[focused_cell.x][focused_cell.y].value = 0
-            print(self.matrix.grid[focused_cell.x][focused_cell.y].value)
-            print("löscherbutton")
+            if self.matrix.grid[focused_cell.x][focused_cell.y].value != 0:
+                focused_cell.delete(0, "end")
+                self.matrix.grid[focused_cell.x][focused_cell.y].value = 0
+                print(self.matrix.grid[focused_cell.x][focused_cell.y].value)
+                print("löscherbutton")
         else: 
             print("no active cell")
 
@@ -60,6 +64,8 @@ class Controls(ctk.CTkFrame):
         else:
             print("no active cell")
 
-        #self.matrix.grid[x][y] = number
-        #print(self.matrix.grid[x][y])
-            #print(self.matrix.grid)
+    def on_press_load(self):
+        #todo: load a puzzle from json through converter
+        self.grid.create_grid()
+        print("newGrid")
+      
