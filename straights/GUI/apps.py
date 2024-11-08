@@ -4,7 +4,7 @@ from .grid import Grid
 from .controls import Controls
 from .matrix import Matrix
 from converter import Converter
-from solver import Solver
+from SOLVER.solver import Solver
 import json
 
 puzzle0 = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
@@ -28,16 +28,17 @@ class App (ctk.CTk):
             self.puzzles = json.load(file)
 
         puzzlelist = self.converter.convert(puzzle0)
-        #puzzlelist = self.converter.convert(self.puzzles["symmetric"]["hard"]["05.11.24"])
+        #puzzlelist = self.converter.convert(self.puzzles["symmetric"]["impossible"]["06.11.24"])
 
         #create Matrix that stores the puzzle
         self.matrix = Matrix(puzzlelist)
 
         #create GUI
         self.grid = Grid(self, 0, 0, "green", 0.65, 1, self.matrix)
-        self.controls = Controls(self, 0.675, 0, "black", 0.3, 0.7, self.grid, self.matrix, self.puzzles)
-        
         #create a solver instance
-        self.solver = Solver()
+        self.solver = Solver(self.matrix, self.grid)
+        self.controls = Controls(self, 0.675, 0, "black", 0.3, 0.7, self.grid, self.matrix, self.puzzles, self.solver)
+        
+        
         #run
         self.mainloop()

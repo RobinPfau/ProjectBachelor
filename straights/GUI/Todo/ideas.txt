@@ -1,9 +1,9 @@
 Grid view für notes ohne backend in entries
 button zum wechsel
 
-
 button für puzzle laden
 
-puzzle als doc speichern
-
 funktion für matrix verändern die auch grid verändert
+
+
+vllt lieber matrix neu erstellen statt zu überschreiben bei neustart(merle Fragen9)

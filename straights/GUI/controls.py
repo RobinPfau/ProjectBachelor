@@ -1,9 +1,10 @@
 import customtkinter as ctk
 from converter import Converter
+from SOLVER.solver import Solver
 
 
 class Controls(ctk.CTkFrame):
-    def __init__(self, parent, x, y, colour, rwidth, rheight, grid, matrix, json_keys,  **kwargs):
+    def __init__(self, parent, x, y, colour, rwidth, rheight, grid, matrix, json_keys, solver, **kwargs):
 
         #setup control menu
         super().__init__(parent, **kwargs)
@@ -12,6 +13,7 @@ class Controls(ctk.CTkFrame):
         self.grid = grid
         self.matrix = matrix
         self.keys = json_keys
+        self.solver = solver
         self.converter = Converter()
 
         self.create_numpad(colour)
@@ -61,6 +63,7 @@ class Controls(ctk.CTkFrame):
         button_solve = ctk.CTkButton(frame, width = 100, text = "SOLVE" ,command=  lambda: self.on_press_solve())
         button_solve.grid(row = 2, column = 0, fill = None, pady = 10, padx =5)
 
+        #creates the help button
         button_help = ctk.CTkButton(frame, width = 100, text = "HELP" ,command=  lambda: self.on_press_help())
         button_help.grid(row = 2, column = 1, fill = None, pady = 10, padx =5)
 
@@ -134,6 +137,8 @@ class Controls(ctk.CTkFrame):
 
     # TODO: offer a not yet defined help
     def on_press_help(self):
+        self.solver.show_correct()
+        #self.grid
         pass
 
     # TODO: toggle to not taking in grid
