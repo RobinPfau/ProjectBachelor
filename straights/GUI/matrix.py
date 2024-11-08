@@ -1,13 +1,15 @@
-
+import numpy as np
 
 class Matrix():
     def __init__(self, puzzle):
         self.solved = False
         self.grid = []
+        self.grid_t = []
         self.grid_content = None
-        
+
         self.puzzle = puzzle
         counter = 0
+    
         for row in range(9):
             current_row = []
             for col in range(9):
@@ -17,6 +19,8 @@ class Matrix():
                 
             self.grid.append(current_row)
 
+        self.grid_t= np.array(self.grid).T
+    
     #updates a single cell of the matrix
     def update_matrix(self, x, y, n):
         self.grid[x][y].value = n
@@ -24,9 +28,11 @@ class Matrix():
     
     #loads a new set of values into the matrix
     def reload_matrix(self, newpuzzle):
-         counter = 0
-         for row in range(9):
+        counter = 0
+        for row in range(9):
             for col in range(9):
                 self.grid_content = newpuzzle[counter]
                 self.grid[row][col] = self.grid_content
                 counter += 1
+            
+        self.grid_t = np.array(self.grid).T

@@ -32,7 +32,7 @@ class Grid(ctk.CTkFrame):
                 border_frame = ctk.CTkFrame(self.frame, fg_color = "white")
                 border_frame.grid(row=row, column=col, fill = None )          
                 
-                cell = Cell(border_frame, xcoord = row, ycoord = col, width = 70, height = 70, font = ("Arial", 50),justify = "center",)
+                cell = Cell(border_frame, xcoord = row, ycoord = col,width = 70, height = 70, font = ("Arial", 50),justify = "center",)
 
                 self.cells[row,col] = cell
                 #bind functionality to the cells
@@ -41,12 +41,16 @@ class Grid(ctk.CTkFrame):
                 cell.bind("<KeyRelease-BackSpace>", self.on_delete)
                 cell.bind("<KeyRelease-Delete>", self.on_delete)
                 cell.bind("<KeyRelease>", self.on_entry)
-
+                
+                cell.frame = border_frame
                 content = rowlist[col]
                 if content.value != 0:
                     cell.insert(0, content.value)
                 cell.configure(fg_color = content.color, text_color = content.get_text_color(), state = content.get_state())
-                
+                if content.get_state() == "normal":
+                    cell.locked = False
+                else:
+                    cell.locked = True 
                 cell.pack(padx = 1,pady = 1)
                 
                 #cell.grid(row = row, column = col, fill = None,) 
@@ -101,7 +105,13 @@ class Grid(ctk.CTkFrame):
 
     #update the displayed value in a cell
     def update_cell(self, row, col, value):
+    
         cell = self.cells.get((row, col))
         
         cell.delete(0, "end")
         cell.insert(0, str(value))
+
+    #green lights
+    def show_correct(self):
+        for cell in self.cells:
+            pass
