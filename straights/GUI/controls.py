@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from converter import Converter
-from SOLVER.solver import Solver
-
+from SOLVER.checker import Solver
+from SOLVER.smt_v1 import SmtSolver
 
 class Controls(ctk.CTkFrame):
     def __init__(self, parent, x, y, colour, rwidth, rheight, grid, matrix, json_keys, solver, **kwargs):
@@ -14,6 +14,7 @@ class Controls(ctk.CTkFrame):
         self.matrix = matrix
         self.keys = json_keys
         self.solver = solver
+        self.smt_v1 = SmtSolver(self.matrix, 9)
         self.converter = Converter()
 
         self.create_numpad(colour)
@@ -72,7 +73,7 @@ class Controls(ctk.CTkFrame):
         #button_test = ctk.CTkButton(self, text = "TEST" ,command=  lambda: self.on_press_test())
         #button_test.pack(padx = 10, pady= 10)
 
-
+    #creates the menues used for loading puzzles
     def create_loading(self):
         self.options_main = ctk.CTkOptionMenu(self, values = list(self.keys.keys()), command = self.on_press_select)
         self.options_main.set("Choose Category")
@@ -82,6 +83,7 @@ class Controls(ctk.CTkFrame):
         self.options_sub = ctk.CTkOptionMenu(self, values = ["Choose Category First"], command = self.on_press_subselect)
         self.options_sub.set("Coose Difficulty")
         self.options_sub.pack()
+        self.options_sub.configure(state = "disabled")
 
 
     #button that clears the selected cell
@@ -114,13 +116,11 @@ class Controls(ctk.CTkFrame):
         sub_cats = list(self.keys[main_cat].keys())
         self.options_sub.configure(values=sub_cats)
         self.options_sub.set("Select a Difficulty")
-        
+        self.options_sub.configure(state = "normal")
      #dropdown  for difficulty selection
     def on_press_subselect(self, sub_cat):
         
         selected_main = self.options_main.get()
-        #self.options_main.configure(state = "disabled")
-        #self.options_sub.configure(state = "disabled")
 
         # TODO: only selecting first puzzle in category. maybe random?
         selected_puzzle = self.converter.convert(self.keys[selected_main][sub_cat][next(iter(self.keys[selected_main][sub_cat]))])
@@ -133,17 +133,30 @@ class Controls(ctk.CTkFrame):
 
     # TODO: start the solver and load solution into grid
     def on_press_solve(self):
-        pass
+        solution = self.smt_v1.find_grid()
+        if solution is not None:
+            for row in range(9):
+                for col in range(9):
+                    cell = self.grid.cells.get((row,col))
+                    value = solution[row][col]
+                
+                    if cell.locked == False:
+                    
+                        cell.delete(0, "end")
+                        cell.insert(0, str(value))
 
+                        self.matrix.update_matrix( row, col, value)
+        else: 
+            print("error")     
     # TODO: offer a not yet defined help
     def on_press_help(self):
-        self.solver.show_correct()
-        #self.grid
-        pass
-
+        self.solver.check_duplicates()
+        
     # TODO: toggle to not taking in grid
     def on_press_toggle_notes(self):
-        pass
-
+        print("toggle")
+        for list in self.matrix.straights:
+            print(len(list))
+        #print(self.matrix.find_straights())
         
       

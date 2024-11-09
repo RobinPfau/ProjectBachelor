@@ -6,4 +6,7 @@ button für puzzle laden
 funktion für matrix verändern die auch grid verändert
 
 
-vllt lieber matrix neu erstellen statt zu überschreiben bei neustart(merle Fragen9)
+vllt lieber matrix neu erstellen statt zu überschreiben bei neustart(merle Fragen9) nää
+
+
+ocr sceenscapture für Str8ts

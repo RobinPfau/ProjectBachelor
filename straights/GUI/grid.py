@@ -34,7 +34,7 @@ class Grid(ctk.CTkFrame):
                 
                 cell = Cell(border_frame, xcoord = row, ycoord = col,width = 70, height = 70, font = ("Arial", 50),justify = "center",)
 
-                self.cells[row,col] = cell
+                
                 #bind functionality to the cells
                 cell.bind("<FocusIn>", lambda event, frame=border_frame, cell = cell: self.on_click_in(event, frame, cell))
                 cell.bind("<FocusOut>", lambda event, frame=border_frame: self.on_click_out(event, frame))
@@ -50,7 +50,8 @@ class Grid(ctk.CTkFrame):
                 if content.get_state() == "normal":
                     cell.locked = False
                 else:
-                    cell.locked = True 
+                    cell.locked = True
+                self.cells[row,col] = cell
                 cell.pack(padx = 1,pady = 1)
                 
                 #cell.grid(row = row, column = col, fill = None,) 
