@@ -133,7 +133,7 @@ class Controls(ctk.CTkFrame):
 
     #start the solver and load solution into grid
     def on_press_solve(self):
-        smt_v1 = SmtSolver(self.puzzlestring, 9)
+        smt_v1 = SmtSolver(self.puzzlestring, self.matrix, 9)
         solution = smt_v1.find_grid()
         if solution is not None:
             for row in range(9):
