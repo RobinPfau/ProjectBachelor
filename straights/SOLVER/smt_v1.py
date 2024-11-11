@@ -2,7 +2,7 @@ import cvc5
 from cvc5 import Kind
 
 class SmtSolver():
-    def __init__(self, matrix, size):
+    def __init__(self, puzzle, matrix, size):
 
         tm = cvc5.TermManager()
         self.solver = cvc5.Solver()
@@ -10,22 +10,21 @@ class SmtSolver():
 
         self.matrix_size = size
         self.matrix = matrix
-        print(matrix)
+        self.intstring = puzzle[:81]
+        self.colorstring = puzzle[81:]
 
+        #TODO swap to new puzzle list 
+   
+        #for i in range(self.matrix_size):
+       #     current_row = []
 
-        
-    def load_initial_grid(self): 
-        initial_grid = []   
-        for i in range(self.matrix_size):
-            current_row = []
+       #     for j in range (self.matrix_size):
+        #        value = self.matrix.grid[i][j].value
+         #       current_row.append(value)
 
-            for j in range (self.matrix_size):
-                value = self.matrix.grid[i][j].value
-                current_row.append(value)
+          #  initial_grid.append(current_row)
 
-            initial_grid.append(current_row)
-
-        return initial_grid
+       # return initial_grid
     
     def load_straights(self):
         straightlist = []
@@ -44,27 +43,24 @@ class SmtSolver():
 
     def find_grid(self):
         
-        self.initial_grid = self.load_initial_grid()
-        print(self.initial_grid)
-
         straights = self.load_straights()
 
         int_sort = self.solver.getIntegerSort()       
         grid = [[self.solver.mkConst(int_sort, f"cell_{i}_{j}") for j in range(self.matrix_size)] for i in range(self.matrix_size)]
-        
+        counter = 0    
 
         for i in range (self.matrix_size):
             for j in range (self.matrix_size):
                 # Constraint: given values must be constant
-                if self.initial_grid[i][j] != 0:
+                if self.intstring[counter] != 0:
 
-                    self.solver.assertFormula(self.solver.mkTerm(Kind.EQUAL, grid[i][j], self.solver.mkInteger(self.initial_grid[i][j])))
+                    self.solver.assertFormula(self.solver.mkTerm(Kind.EQUAL, grid[i][j], self.solver.mkInteger(self.intstring[counter])))
                 else:
                     # Constraint: each cell must be greater or equal than 1
                     self.solver.assertFormula(self.solver.mkTerm(Kind.GEQ, grid[i][j], self.solver.mkInteger(1)))
                     # Constraint: each cell must be less or equal than 9
                     self.solver.assertFormula(self.solver.mkTerm(Kind.LEQ, grid[i][j], self.solver.mkInteger(9)))
-
+                counter =+1
 
         #positive cells
         # for i in range(self.matrix_size):
@@ -122,8 +118,7 @@ class SmtSolver():
                 min_integer_const = self.solver.mkTerm(Kind.ITE, self.solver.mkTerm(Kind.LT, integer_const, min_integer_const), integer_const, min_integer_const)          
             
             difference = self.solver.mkInteger(len(cells_in_straight)-1)
-            print(difference)
-
+            
             diff_term = self.solver.mkTerm(Kind.SUB, max_integer_const, min_integer_const)
 
             self.solver.assertFormula(self.solver.mkTerm(Kind.EQUAL, diff_term, difference))
