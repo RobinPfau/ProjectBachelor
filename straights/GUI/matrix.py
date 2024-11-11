@@ -17,7 +17,11 @@ class Matrix():
             current_row = []
             for col in range(self.matrix_size):
                 self.grid_content = self.puzzle[counter]
+                self.grid_content.x = row
+                self.grid_content.y = col
+
                 current_row.append(self.grid_content)
+                
                 counter += 1
                 
             self.grid.append(current_row)
@@ -33,9 +37,12 @@ class Matrix():
     #loads a new set of values into the matrix, updates straights and transposed matrix
     def reload_matrix(self, newpuzzle):
         counter = 0
+        print(counter)
         for row in range(self.matrix_size):
             for col in range(self.matrix_size):
                 self.grid_content = newpuzzle[counter]
+                self.grid_content.x = row
+                self.grid_content.y = col
                 self.grid[row][col] = self.grid_content
                 counter += 1
             
@@ -95,3 +102,4 @@ class Matrix():
 
         print(len(straights))
         return straights
+    
