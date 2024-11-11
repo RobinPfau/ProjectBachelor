@@ -4,7 +4,7 @@ from SOLVER.checker import Solver
 from SOLVER.smt_v1 import SmtSolver
 
 class Controls(ctk.CTkFrame):
-    def __init__(self, parent, x, y, colour, rwidth, rheight, grid, matrix, json_keys, solver, **kwargs):
+    def __init__(self, parent, x, y, colour, rwidth, rheight, grid, matrix, json_keys, **kwargs):
 
         #setup control menu
         super().__init__(parent, **kwargs)
@@ -13,15 +13,13 @@ class Controls(ctk.CTkFrame):
         self.grid = grid
         self.matrix = matrix
         self.keys = json_keys
-        self.solver = solver
-        self.smt_v1 = SmtSolver(self.matrix, 9)
+        
         self.converter = Converter()
 
         self.create_numpad(colour)
         self.create_control_buttons()
         self.create_loading()
                 
-    
     #creates the numpad
     def create_numpad(self, colour):
         
@@ -89,8 +87,8 @@ class Controls(ctk.CTkFrame):
     #button that clears the selected cell
     def on_press_delete(self):
         focused_cell = self.grid.selected_cell
-        if focused_cell is not None:
-            if self.matrix.grid[focused_cell.x][focused_cell.y].value != 0:
+        if focused_cell is not None and focused_cell.cget("state") != "readonly":
+            if self.matrix.grid[focused_cell.x][focused_cell.y].value != 0 :
                 focused_cell.delete(0, "end")
                 self.matrix.grid[focused_cell.x][focused_cell.y].value = 0
                 print(self.matrix.grid[focused_cell.x][focused_cell.y].value)
@@ -102,7 +100,7 @@ class Controls(ctk.CTkFrame):
     def on_press_number(self, number):
         #print(number)
         focused_cell = self.grid.selected_cell
-        if focused_cell is not None:
+        if focused_cell is not None and focused_cell.cget("state") != "readonly":
             focused_cell.delete(0, "end")
             focused_cell.insert(0, number)
             self.matrix.grid[focused_cell.x][focused_cell.y].value = number
@@ -123,17 +121,20 @@ class Controls(ctk.CTkFrame):
         selected_main = self.options_main.get()
 
         # TODO: only selecting first puzzle in category. maybe random?
+        self.puzzlestring = self.keys[selected_main][sub_cat][next(iter(self.keys[selected_main][sub_cat]))]
         selected_puzzle = self.converter.convert(self.keys[selected_main][sub_cat][next(iter(self.keys[selected_main][sub_cat]))])
         
         self.matrix.reload_matrix(selected_puzzle)
         self.grid.delete_grid()
         self.grid.create_grid()
+        
 
         print(f"Selected path: {selected_main}/{sub_cat}")
 
-    # TODO: start the solver and load solution into grid
+    #start the solver and load solution into grid
     def on_press_solve(self):
-        solution = self.smt_v1.find_grid()
+        smt_v1 = SmtSolver(self.puzzlestring, 9)
+        solution = smt_v1.find_grid()
         if solution is not None:
             for row in range(9):
                 for col in range(9):
@@ -154,9 +155,7 @@ class Controls(ctk.CTkFrame):
         
     # TODO: toggle to not taking in grid
     def on_press_toggle_notes(self):
-        print("toggle")
-        for list in self.matrix.straights:
-            print(len(list))
+        self.grid.show_correct()
         #print(self.matrix.find_straights())
         
       

@@ -38,7 +38,7 @@ class App (ctk.CTk):
         self.grid = Grid(self, 0, 0, "green", 0.65, 1, self.matrix)
         #create a solver instance
         self.solver = Solver(self.matrix)
-        self.controls = Controls(self, 0.675, 0, "black", 0.3, 0.7, self.grid, self.matrix, self.puzzles, self.solver)
+        self.controls = Controls(self, 0.675, 0, "black", 0.3, 0.7, self.grid, self.matrix, self.puzzles)
         
         
         #run

@@ -12,6 +12,10 @@ class Grid(ctk.CTkFrame):
         self.selected_cell = None
         self.matrix = matrix
         self.cells = {}
+        self.notes = False
+
+        self.vaidate_command = parent.register(self.validate_number)
+
         self.create_grid()
         
     def delete_grid(self):
@@ -29,20 +33,23 @@ class Grid(ctk.CTkFrame):
             for col in range(9):
                 self.frame.grid_columnconfigure(col, weight=1)
                 
-                border_frame = ctk.CTkFrame(self.frame, fg_color = "white")
-                border_frame.grid(row=row, column=col, fill = None )          
+                #border_frame = ctk.CTkFrame(self.frame, fg_color = "white")
+                #border_frame.grid(row=row, column=col, fill = None )          
                 
-                cell = Cell(border_frame, xcoord = row, ycoord = col,width = 70, height = 70, font = ("Arial", 50),justify = "center",)
+                cell = Cell(self.frame, xcoord = row, ycoord = col,width = 70, height = 70, font = ("Arial", 50),justify = "center",)
 
                 
                 #bind functionality to the cells
-                cell.bind("<FocusIn>", lambda event, frame=border_frame, cell = cell: self.on_click_in(event, frame, cell))
-                cell.bind("<FocusOut>", lambda event, frame=border_frame: self.on_click_out(event, frame))
+                cell.bind("<FocusIn>", lambda event, cell = cell: self.on_click_in(event, cell))
+                cell.bind("<FocusOut>", lambda event, cell = cell: self.on_click_out(event))
                 cell.bind("<KeyRelease-BackSpace>", self.on_delete)
                 cell.bind("<KeyRelease-Delete>", self.on_delete)
                 cell.bind("<KeyRelease>", self.on_entry)
+
+                #only arabic numerals allowed in entries
+                cell.configure(validate = "key", validatecommand = (self.vaidate_command, "%P"))
                 
-                cell.frame = border_frame
+                #cell.frame = border_frame
                 content = rowlist[col]
                 if content.value != 0:
                     cell.insert(0, content.value)
@@ -52,21 +59,42 @@ class Grid(ctk.CTkFrame):
                 else:
                     cell.locked = True
                 self.cells[row,col] = cell
-                cell.pack(padx = 1,pady = 1)
+                #cell.grid(padx = 1,pady = 1)
                 
-                #cell.grid(row = row, column = col, fill = None,) 
+                cell.grid(row = row, column = col, fill = None, padx =1 , pady = 1) 
                 
   
         self.frame.pack(expand = False, fill= None, anchor = "nw", padx = 20, pady = 20)
     
     #select entry with mouse, indicate visually
-    def on_click_in(self, event, frame, cell):
-        frame.configure(fg_color = "lightgreen")
+    def on_click_in(self, event, cell):
+        
         self.selected_cell = cell
 
+        for list in self.matrix.straights:
+            for element in list:
+                if element.x == cell.x and element.y == cell.y:
+                   
+                    for element in list:
+                        x = element.x
+                        y = element.y
+                        #self.cells[x,y].frame.configure(fg_color = "lightgreen")
+                        self.cells[x,y].configure(fg_color = "lightgreen")
+
+        cell.configure(fg_color = "green")
+
+
     #needed for losing focus 
-    def on_click_out(self, event, frame):
-        frame.configure(fg_color = "white")
+    def on_click_out(self, event,):
+        for x in range(9):
+            for y in range(9):
+                if self.cells[x,y].cget("state") != "disabled":
+                    self.cells[x,y].configure(fg_color = "white")
+
+
+    def validate_number(self, text):
+        return text == "" or text.isdigit()
+
 
     #functionality on typing in cell, update visual and matrix
     def on_entry(self, event):
@@ -78,7 +106,7 @@ class Grid(ctk.CTkFrame):
         if cell.get():
             current_value = cell.get()[0]
             cell.delete(0, "end")
-            if event.char.isdigit() and event.char != "0":
+            if event.char.isdigit() and event.char != "0" and cell.cget("state") != "readonly":
                 cell.insert(0, event.char)
                 self.matrix.grid[x][y].value = int(event.char)
                 
@@ -92,7 +120,7 @@ class Grid(ctk.CTkFrame):
         x = self.selected_cell.x
         y = self.selected_cell.y
        
-        if self.matrix.grid[x][y].value == 0:
+        if self.matrix.grid[x][y].value == 0 or self.selected_cell.cget("state") == "readonly":
             return
         
         cell = event.widget
@@ -114,5 +142,10 @@ class Grid(ctk.CTkFrame):
 
     #green lights
     def show_correct(self):
-        for cell in self.cells:
-            pass
+
+    
+        for x in range(9):
+            for y in range(9):
+                self.cells[x,y].configure(state = "normal")
+                self.cells[x,y].configure(fg_color = "lightgreen")
+                self.cells[x,y].configure(state = "disabled")
