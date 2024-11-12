@@ -4,7 +4,6 @@ from cvc5 import Kind
 class SmtSolver():
     def __init__(self, puzzle, matrix, size):
 
-        tm = cvc5.TermManager()
         self.solver = cvc5.Solver()
         self.solver.setOption("produce-models", "true")
 
@@ -13,8 +12,7 @@ class SmtSolver():
         self.intstring = puzzle[:81]
         self.colorstring = puzzle[81:]
 
-        #TODO swap to new puzzle list 
-   
+    
         #for i in range(self.matrix_size):
        #     current_row = []
 
@@ -44,23 +42,27 @@ class SmtSolver():
     def find_grid(self):
         
         straights = self.load_straights()
+        int_sort = self.solver.getIntegerSort()    
 
-        int_sort = self.solver.getIntegerSort()       
-        grid = [[self.solver.mkConst(int_sort, f"cell_{i}_{j}") for j in range(self.matrix_size)] for i in range(self.matrix_size)]
+        grid = [[self.solver.mkConst(int_sort, f"cell_{x}_{y}") for x in range(self.matrix_size)] for y in range(self.matrix_size)]
         counter = 0    
 
-        for i in range (self.matrix_size):
-            for j in range (self.matrix_size):
+        for x in range (self.matrix_size):
+            for y in range (self.matrix_size):
+                value = int(self.intstring[counter])
+                color = int(self.colorstring[counter])
                 # Constraint: given values must be constant
-                if self.intstring[counter] != 0:
-
-                    self.solver.assertFormula(self.solver.mkTerm(Kind.EQUAL, grid[i][j], self.solver.mkInteger(self.intstring[counter])))
-                else:
+                if value != 0:
+                    self.solver.assertFormula(self.solver.mkTerm(Kind.EQUAL, grid[x][y], self.solver.mkInteger(value)))
+                # Constraint: empty black values must be ignored
+                elif color == 1:
+                    self.solver.assertFormula(self.solver.mkTerm(Kind.LEQ,  grid[x][y], self.solver.mkInteger(-1)))
+                else:    
                     # Constraint: each cell must be greater or equal than 1
-                    self.solver.assertFormula(self.solver.mkTerm(Kind.GEQ, grid[i][j], self.solver.mkInteger(1)))
+                    self.solver.assertFormula(self.solver.mkTerm(Kind.GEQ, grid[x][y], self.solver.mkInteger(1)))
                     # Constraint: each cell must be less or equal than 9
-                    self.solver.assertFormula(self.solver.mkTerm(Kind.LEQ, grid[i][j], self.solver.mkInteger(9)))
-                counter =+1
+                    self.solver.assertFormula(self.solver.mkTerm(Kind.LEQ, grid[x][y], self.solver.mkInteger(9)))
+                counter += 1
 
         #positive cells
         # for i in range(self.matrix_size):
@@ -70,19 +72,19 @@ class SmtSolver():
 
 
         #distinct values in rows
-        for i in range(self.matrix_size):
-            for j in range(self.matrix_size):
-                for k in range(j + 1, self.matrix_size):
+        for x in range(self.matrix_size):
+            for y in range(self.matrix_size):
+                for k in range(y + 1, self.matrix_size):
                     # Constraint: each cell must be distinct in its row:
-                    self.solver.assertFormula(self.solver.mkTerm(Kind.DISTINCT, grid[i][j], grid[i][k]))
+                    self.solver.assertFormula(self.solver.mkTerm(Kind.DISTINCT, grid[x][y], grid[x][k]))
 
 
         #distinct values in col
-        for j in range( self.matrix_size):
-            for i in range( self.matrix_size):
-                for k in range(i + 1,  self.matrix_size):
+        for y in range( self.matrix_size):
+            for x in range( self.matrix_size):
+                for k in range(x + 1,  self.matrix_size):
                     # Constraint: each cell must be distinct in its column:
-                    self.solver.assertFormula(self.solver.mkTerm(Kind.DISTINCT, grid[i][j], grid[k][j]))
+                    self.solver.assertFormula(self.solver.mkTerm(Kind.DISTINCT, grid[x][y], grid[k][y]))
 
 
         #values in straights are consecutive
@@ -102,11 +104,11 @@ class SmtSolver():
         for element in straights:
            
             cells_in_straight = []
-
+            print(element)
             for tupel in element:
-                i = tupel[0]
-                j = tupel[1]
-                cells_in_straight.append(grid[i][j])
+                x = tupel[0]
+                y = tupel[1]
+                cells_in_straight.append(grid[x][y])
             
           
             max_integer_const = cells_in_straight[0]
@@ -115,9 +117,9 @@ class SmtSolver():
             for integer_const in cells_in_straight[1:]:
                
                 max_integer_const = self.solver.mkTerm(Kind.ITE, self.solver.mkTerm(Kind.GT, max_integer_const, integer_const), max_integer_const, integer_const)                                     
-                min_integer_const = self.solver.mkTerm(Kind.ITE, self.solver.mkTerm(Kind.LT, integer_const, min_integer_const), integer_const, min_integer_const)          
+                min_integer_const = self.solver.mkTerm(Kind.ITE, self.solver.mkTerm(Kind.LT, min_integer_const, integer_const), min_integer_const, integer_const)          
             
-            difference = self.solver.mkInteger(len(cells_in_straight)-1)
+            difference = self.solver.mkInteger(len(cells_in_straight) - 1)
             
             diff_term = self.solver.mkTerm(Kind.SUB, max_integer_const, min_integer_const)
 
@@ -133,16 +135,15 @@ class SmtSolver():
         if self.solver.checkSat().isSat():
             print("Solution found:")
             solution = []
-            for i in range(self.matrix_size):
+            for x in range(self.matrix_size):
                 row = []
-                for j in range(self.matrix_size):
+                for y in range(self.matrix_size):
                     # Get the model value for each cell in the grid
-                    
-                    cell_value = self.solver.getValue(grid[i][j]).getIntegerValue()
-                    
+                    cell_value = self.solver.getValue(grid[x][y]).getIntegerValue()
                     row.append(cell_value)
+
                 solution.append(row)
-           
+            print(solution)
             return solution
         else:
             print("No solution exists that satisfies the constraints.")
