@@ -1,12 +1,4 @@
 Grid view für notes ohne backend in entries
 button zum wechsel
 
-
-
-solver muss schwarze felder ohne zahlen ignorieren! 
-also: string als puzzle einladen, und halbieren
-und 2 mal checken bei constant festlegung im ersten constraint
-
-
-
 ocr sceenscapture für Str8ts

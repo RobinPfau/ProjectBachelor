@@ -100,38 +100,33 @@ class SmtSolver():
                #             self.solver.mkTerm(Kind))
 
 
-        
+        #consecutive values in straights
         for element in straights:
-           
-            cells_in_straight = []
-            print(element)
+            cells_in_straight = []        
+            #creates a list of grid cells in a straight
             for tupel in element:
                 x = tupel[0]
                 y = tupel[1]
                 cells_in_straight.append(grid[x][y])
-            
           
             max_integer_const = cells_in_straight[0]
             min_integer_const = cells_in_straight[0]
-
-            for integer_const in cells_in_straight[1:]:
-               
+            #find the biggest and smallest value in a straight
+            for integer_const in cells_in_straight[1:]:  
                 max_integer_const = self.solver.mkTerm(Kind.ITE, self.solver.mkTerm(Kind.GT, max_integer_const, integer_const), max_integer_const, integer_const)                                     
                 min_integer_const = self.solver.mkTerm(Kind.ITE, self.solver.mkTerm(Kind.LT, min_integer_const, integer_const), min_integer_const, integer_const)          
-            
-            difference = self.solver.mkInteger(len(cells_in_straight) - 1)
-            
+            #find the values to compare as differences 
+            difference = self.solver.mkInteger(len(cells_in_straight) - 1)   
             diff_term = self.solver.mkTerm(Kind.SUB, max_integer_const, min_integer_const)
 
+            # Constraint: difference of values in Straight is equal to size of straight -1
             self.solver.assertFormula(self.solver.mkTerm(Kind.EQUAL, diff_term, difference))
 
             #self.solver.assertFormula(self.solver.mkTerm(Kind.EQUAL, min_integer_const, self.solver.mkTerm(Kind.SUB, max_integer_const, difference)))
-
-
                 # Constraint: Minimum in straight = maximum - n -1
                 #self.solver.assertFormula(self.solver.mkTerm(Kind.EQUAL, MAximum, minum -n-1)
   
-
+        # returns grid as maxtrix of integers on success
         if self.solver.checkSat().isSat():
             print("Solution found:")
             solution = []

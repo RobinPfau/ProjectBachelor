@@ -37,8 +37,8 @@ class Matrix():
     #loads a new set of values into the matrix, updates straights and transposed matrix
     def reload_matrix(self, newpuzzle):
         counter = 0
-        print(counter)
         for row in range(self.matrix_size):
+
             for col in range(self.matrix_size):
                 self.grid_content = newpuzzle[counter]
                 self.grid_content.x = row
@@ -47,14 +47,11 @@ class Matrix():
                 counter += 1
             
         self.grid_t = np.array(self.grid).T
-
         self.straights = self.find_straights()
 
     #finds all groupings and saves them in a list
     def find_straights(self):
-
-        straights = []
-        
+        straights = []     
         for row in range(self.matrix_size):
             current_straight = []
             listing = False
@@ -66,6 +63,7 @@ class Matrix():
                     if listing:
                         if len(current_straight) > 1: 
                             straights.append(current_straight)
+
                         current_straight = []
                         listing = False                                
 
@@ -74,6 +72,7 @@ class Matrix():
                         listing = True
                     
                     current_straight.append(self.grid[row][col])
+
             if len(current_straight) > 1:  
                 straights.append(current_straight)
         
@@ -88,6 +87,7 @@ class Matrix():
                     if listing:
                         if len(current_straight) > 1: 
                             straights.append(current_straight)
+                            
                         current_straight = []
                         listing = False                                
 
@@ -100,6 +100,5 @@ class Matrix():
             if len(current_straight) > 1: 
                 straights.append(current_straight)
 
-        print(len(straights))
         return straights
     
