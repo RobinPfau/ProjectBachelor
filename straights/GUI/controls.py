@@ -86,18 +86,6 @@ class Controls(ctk.CTkFrame):
         self.options_sub.pack()
         self.options_sub.configure(state = "disabled")
 
-    #button that clears the selected cell
-    def on_press_delete(self):
-        focused_cell = self.grid.selected_cell
-        if focused_cell is not None and focused_cell.cget("state") != "readonly":
-            if self.grid.matrix.grid[focused_cell.x][focused_cell.y].value != 0 :
-                focused_cell.delete(0, "end")
-                self.grid.matrix.grid[focused_cell.x][focused_cell.y].value = 0
-                print(self.grid.matrix.grid[focused_cell.x][focused_cell.y].value)
-                print("löscherbutton")
-        else: 
-            print("no active cell")
-
     #numpad buttons that enters the pressed number into cell
     def on_press_number(self, number):
         #print(number)
@@ -134,6 +122,19 @@ class Controls(ctk.CTkFrame):
         if self.solutions:
             self.grid.save_solution(self.solutions)
 
+    #button that clears the selected cell
+    def on_press_delete(self):
+        focused_cell = self.grid.selected_cell
+        if focused_cell is not None and focused_cell.cget("state") != "readonly":
+            if self.grid.matrix.grid[focused_cell.x][focused_cell.y].value != 0 :
+                focused_cell.delete(0, "end")
+                self.grid.matrix.grid[focused_cell.x][focused_cell.y].value = 0
+                print(self.grid.matrix.grid[focused_cell.x][focused_cell.y].value)
+                print("löscherbutton")
+        else: 
+            print("no active cell")
+    
+    #solves the selected puzzle
     def solve(self):
         smt_v1 = SmtSolver(self.puzzlestring, self.grid.matrix, 9)
         solutions = smt_v1.find_grid()
@@ -150,7 +151,7 @@ class Controls(ctk.CTkFrame):
                     value = self.solutions[row][col]
                 
                     if cell.locked == False:
-                    
+                        self.grid.matrix.grid[row][col].value = value
                         cell.delete(0, "end")
                         cell.insert(0, str(value))
         else: 

@@ -29,7 +29,7 @@ class App (ctk.CTk):
 
         self.converter = Converter()
         puzzlelist = self.converter.convert(puzzle0)
-        #puzzlelist = self.converter.convert(self.puzzles["symmetric"]["impossible"]["10.11.24"])
+        #puzzlelist = self.converter.convert(self.puzzles["symmetric"]["medium"]["12.11.24"])
 
         #create GUI
         self.grid = Grid(parent = self, x = 0, y = 0, rwidth = 0.65, rheight = 1, puzzlelist = puzzlelist)

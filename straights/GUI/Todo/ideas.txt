@@ -2,3 +2,12 @@ Grid view für notes ohne backend in entries
 button zum wechsel
 
 ocr sceenscapture für Str8ts
+
+
+
+hilfe button revealed ausgewählte zelle
+solve button zeigt lösung
+check button markiert fehler für alle oder ausgewählte
+
+hilfestellung
+punkte mit nur noch einer lösung revealen als hilfestellung
