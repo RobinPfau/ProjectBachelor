@@ -80,7 +80,7 @@ class SmtSolver():
 
 
         #distinct values in col
-        for y in range( self.matrix_size):
+        for y in range(self.matrix_size):
             for x in range( self.matrix_size):
                 for k in range(x + 1,  self.matrix_size):
                     # Constraint: each cell must be distinct in its column:

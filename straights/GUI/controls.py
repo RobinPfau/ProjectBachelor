@@ -1,19 +1,19 @@
 import customtkinter as ctk
 from converter import Converter
-from SOLVER.checker import Solver
 from SOLVER.smt_v1 import SmtSolver
+import random as random
 
 class Controls(ctk.CTkFrame):
-    def __init__(self, parent, x, y, colour, rwidth, rheight, grid, matrix, json_keys, **kwargs):
+    def __init__(self, parent, x, y, colour, rwidth, rheight, grid, json_keys, **kwargs):
 
         #setup control menu
         super().__init__(parent, **kwargs)
         self.place(relx = x, rely= y, relwidth = rwidth, relheight = rheight)
         self.button_number = 1
         self.grid = grid
-        self.matrix = matrix
         self.keys = json_keys
-        
+        self.solutions = None
+               
         self.converter = Converter()
 
         self.create_numpad(colour)
@@ -57,11 +57,14 @@ class Controls(ctk.CTkFrame):
         button_notes = ctk.CTkButton(frame, width = 100, text = "NOTES" ,command=  lambda: self.on_press_toggle_notes())
         button_notes.grid(row = 0, column = 1, fill = None, pady = 10, padx =5)
 
-
-
         button_solve = ctk.CTkButton(frame, width = 100, text = "SOLVE" ,command=  lambda: self.on_press_solve())
-        button_solve.grid(row = 2, column = 0, fill = None, pady = 10, padx =5)
+        button_solve.grid(row = 1, column = 0, fill = None, pady = 10, padx =5)
 
+        button_solve = ctk.CTkButton(frame, width = 100, text = "CHECK" ,command=  lambda: self.on_press_check())
+        button_solve.grid(row = 1, column = 1, fill = None, pady = 10, padx =5)
+
+        button_solve = ctk.CTkButton(frame, width = 100, text = "REVEAL" ,command=  lambda: self.on_press_reveal())
+        button_solve.grid(row = 2, column = 0, fill = None, pady = 10, padx =5)
         #creates the help button
         button_help = ctk.CTkButton(frame, width = 100, text = "HELP" ,command=  lambda: self.on_press_help())
         button_help.grid(row = 2, column = 1, fill = None, pady = 10, padx =5)
@@ -83,15 +86,14 @@ class Controls(ctk.CTkFrame):
         self.options_sub.pack()
         self.options_sub.configure(state = "disabled")
 
-
     #button that clears the selected cell
     def on_press_delete(self):
         focused_cell = self.grid.selected_cell
         if focused_cell is not None and focused_cell.cget("state") != "readonly":
-            if self.matrix.grid[focused_cell.x][focused_cell.y].value != 0 :
+            if self.grid.matrix.grid[focused_cell.x][focused_cell.y].value != 0 :
                 focused_cell.delete(0, "end")
-                self.matrix.grid[focused_cell.x][focused_cell.y].value = 0
-                print(self.matrix.grid[focused_cell.x][focused_cell.y].value)
+                self.grid.matrix.grid[focused_cell.x][focused_cell.y].value = 0
+                print(self.grid.matrix.grid[focused_cell.x][focused_cell.y].value)
                 print("löscherbutton")
         else: 
             print("no active cell")
@@ -103,8 +105,8 @@ class Controls(ctk.CTkFrame):
         if focused_cell is not None and focused_cell.cget("state") != "readonly":
             focused_cell.delete(0, "end")
             focused_cell.insert(0, number)
-            self.matrix.grid[focused_cell.x][focused_cell.y].value = number
-            print(self.matrix.grid[focused_cell.x][focused_cell.y].value)
+            self.grid.matrix.grid[focused_cell.x][focused_cell.y].value = number
+            print(self.grid.matrix.grid[focused_cell.x][focused_cell.y].value)
         else:
             print("no active cell")
 
@@ -115,47 +117,58 @@ class Controls(ctk.CTkFrame):
         self.options_sub.configure(values=sub_cats)
         self.options_sub.set("Select a Difficulty")
         self.options_sub.configure(state = "normal")
+
      #dropdown  for difficulty selection
     def on_press_subselect(self, sub_cat):
-        
         selected_main = self.options_main.get()
 
-        # TODO: only selecting first puzzle in category. maybe random?
-        self.puzzlestring = self.keys[selected_main][sub_cat][next(iter(self.keys[selected_main][sub_cat]))]
-        selected_puzzle = self.converter.convert(self.keys[selected_main][sub_cat][next(iter(self.keys[selected_main][sub_cat]))])
+        self.puzzlestring = random.choice(list(self.keys[selected_main][sub_cat].values()))
+        selected_puzzle = self.converter.convert(self.puzzlestring)
         
-        self.matrix.reload_matrix(selected_puzzle)
         self.grid.delete_grid()
-        self.grid.create_grid()
-        
+        self.grid.create_grid(selected_puzzle)
 
         print(f"Selected path: {selected_main}/{sub_cat}")
 
-    #start the solver and load solution into grid
+        self.solutions = self.solve()
+        if self.solutions:
+            self.grid.save_solution(self.solutions)
+
+    def solve(self):
+        smt_v1 = SmtSolver(self.puzzlestring, self.grid.matrix, 9)
+        solutions = smt_v1.find_grid()
+        
+        return solutions
+
+    #loads the solution into the GUI
     def on_press_solve(self):
-        smt_v1 = SmtSolver(self.puzzlestring, self.matrix, 9)
-        solution = smt_v1.find_grid()
-        if solution is not None:
+        
+        if self.solutions:
             for row in range(9):
                 for col in range(9):
                     cell = self.grid.cells.get((row,col))
-                    value = solution[row][col]
+                    value = self.solutions[row][col]
                 
                     if cell.locked == False:
                     
                         cell.delete(0, "end")
                         cell.insert(0, str(value))
-
-                        self.matrix.update_matrix( row, col, value)
         else: 
-            print("error")     
+            print("error solution none")     
+
+    # TODO: checks if the active sell holds the correct value
+    def on_press_check(self):
+        self.grid.check_cell_solution()
+
+    # TODO. reveals the correct value in the selected cell
+    def on_press_reveal(self):
+       self.grid.reveal_cell_solution()
+
     # TODO: offer a not yet defined help
     def on_press_help(self):
-        self.solver.check_duplicates()
+        pass
         
     # TODO: toggle to not taking in grid
     def on_press_toggle_notes(self):
-        self.grid.show_correct()
-        #print(self.matrix.find_straights())
-        
+        pass        
       

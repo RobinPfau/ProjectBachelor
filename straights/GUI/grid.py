@@ -4,25 +4,27 @@ from .cell import Cell
 
 class Grid(ctk.CTkFrame):
     
-    def __init__(self, parent, x, y, colour, rwidth,  rheight, matrix: Matrix, **kwargs):
+    def __init__(self, parent, x, y, rwidth, rheight, puzzlelist, **kwargs):
         
         #setup frame
         super().__init__(parent, **kwargs)
         self.place(relx = x, rely= y, relwidth = rwidth, relheight = rheight)
         self.selected_cell = None
-        self.matrix = matrix
+        self.matrix = None
         self.cells = {}
         self.notes = False
 
         self.vaidate_command = parent.register(self.validate_number)
 
-        self.create_grid()
+        self.create_grid(puzzlelist)
         
     def delete_grid(self):
         self.frame.destroy()
 
+    def create_grid(self, puzzlelist):
 
-    def create_grid(self):
+        self.matrix = Matrix(puzzlelist)
+        
         #puzzle frame
         self.frame = ctk.CTkFrame(self)
                 
@@ -91,11 +93,6 @@ class Grid(ctk.CTkFrame):
                 if self.cells[x,y].cget("state") != "disabled":
                     self.cells[x,y].configure(fg_color = "white")
 
-
-    def validate_number(self, text):
-        return text == "" or text.isdigit()
-
-
     #functionality on typing in cell, update visual and matrix
     def on_entry(self, event):
         cell = event.widget
@@ -134,18 +131,44 @@ class Grid(ctk.CTkFrame):
 
     #update the displayed value in a cell
     def update_cell(self, row, col, value):
-    
         cell = self.cells.get((row, col))
         
         cell.delete(0, "end")
         cell.insert(0, str(value))
 
-    #green lights
-    def show_correct(self):
+    #saves the solutions into the gridelements in the matrix grid
+    def save_solution(self, solutions):
+        for x, row in enumerate(solutions):
+            for y, solution in enumerate(row):
+                if solution > 0:
+                    self.matrix.grid[x][y].solution = solution
+
+    # TODO: checks if solution and value in Grid are the same
+    def check_cell_solution(self):
+        if self.selected_cell:
+            cell = self.selected_cell
+            x = cell.x
+            y = cell.y
+            solution = self.matrix.grid[x][y].solution
+            if cell.get():
+                if solution == int(cell.get()[0]): 
+                    cell.configure(fg_color = "lightblue")
+                else:
+                    cell.configure(fg_color = "orange")
+    
+    # TODO: updates cell to correct value
+    def reveal_cell_solution(self):
+        if self.selected_cell:
+            cell = self.selected_cell
+            x = cell.x
+            y = cell.y
+
+            solution = self.matrix.grid[x][y].solution
+        
+            cell.delete(0, "end")
+            cell.insert(0, str(solution))
 
     
-        for x in range(9):
-            for y in range(9):
-                self.cells[x,y].configure(state = "normal")
-                self.cells[x,y].configure(fg_color = "lightgreen")
-                self.cells[x,y].configure(state = "disabled")
+    # utility function that validates input as integer
+    def validate_number(self, text):
+        return text == "" or text.isdigit()

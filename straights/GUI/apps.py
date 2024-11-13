@@ -21,25 +21,19 @@ class App (ctk.CTk):
         self.geometry(f'{size[0]}x{size[1]}')
         self.minsize(500,500)
         self.resizable(False, False)
-        self.converter = Converter()
         self. matrix_size = 9
-        
+    
         #create and use converter
         with open("puzzles.json", "r") as file:
             self.puzzles = json.load(file)
 
+        self.converter = Converter()
         puzzlelist = self.converter.convert(puzzle0)
-        #puzzlelist = self.converter.convert(self.puzzles["asymmetric"]["impossible"]["08.11.24"])
-
-        #create Matrix that stores the puzzle
-        self.matrix = Matrix(puzzlelist)
+        #puzzlelist = self.converter.convert(self.puzzles["symmetric"]["impossible"]["10.11.24"])
 
         #create GUI
-        self.grid = Grid(self, 0, 0, "green", 0.65, 1, self.matrix)
-        #create a solver instance
-        self.solver = Solver(self.matrix)
-        self.controls = Controls(self, 0.675, 0, "black", 0.3, 0.7, self.grid, self.matrix, self.puzzles)
-        
+        self.grid = Grid(parent = self, x = 0, y = 0, rwidth = 0.65, rheight = 1, puzzlelist = puzzlelist)
+        self.controls = Controls(self, 0.675, 0, "black", 0.3, 0.7,self.grid, self.puzzles)
         
         #run
         self.mainloop()

@@ -4,6 +4,7 @@ class GridElement():
         self.color = color
         self.x = x
         self.y = y
+        self.solution = None
 
     def get_text_color(self):
         if self.value == 0 and self.color == "white":

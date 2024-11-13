@@ -1,3 +1,4 @@
 from GUI.apps import App
 
-App("Str8ts Solver", (1000,700))
+if __name__ == "__main__":
+    App("Str8ts Solver", (1000,700))
