@@ -13,6 +13,7 @@ class Grid(ctk.CTkFrame):
         self.matrix = None
         self.cells = {}
         self.notes = False
+        self.creative_mode = False
 
         self.vaidate_command = parent.register(self.validate_number)
 
@@ -72,26 +73,28 @@ class Grid(ctk.CTkFrame):
     def on_click_in(self, event, cell):
         
         self.selected_cell = cell
-
-        for list in self.matrix.straights:
-            for element in list:
-                if element.x == cell.x and element.y == cell.y:
+        print(self.creative_mode)
+        if self.creative_mode == False:
+            for list in self.matrix.straights:
+                for element in list:
+                    if element.x == cell.x and element.y == cell.y:
                    
-                    for element in list:
-                        x = element.x
-                        y = element.y
+                        for element in list:
+                            x = element.x
+                            y = element.y
                         #self.cells[x,y].frame.configure(fg_color = "lightgreen")
-                        self.cells[x,y].configure(fg_color = "lightgreen")
+                            self.cells[x,y].configure(fg_color = "lightgreen")
 
-        cell.configure(fg_color = "green")
+            cell.configure(fg_color = "green")
 
 
     #needed for losing focus 
     def on_click_out(self, event,):
-        for x in range(9):
-            for y in range(9):
-                if self.cells[x,y].cget("state") != "disabled":
-                    self.cells[x,y].configure(fg_color = "white")
+        if self.creative_mode is False:
+            for x in range(9):
+                for y in range(9):
+                    if self.cells[x,y].cget("state") != "disabled":
+                        self.cells[x,y].configure(fg_color = "white")
 
     #functionality on typing in cell, update visual and matrix
     def on_entry(self, event):
@@ -168,6 +171,17 @@ class Grid(ctk.CTkFrame):
             cell.delete(0, "end")
             cell.insert(0, str(solution))
 
+    def swap_color(self):
+        if self.selected_cell and self.creative_mode:
+            cell = self.selected_cell
+            x = cell.x
+            y = cell.y
+            color = self.matrix.grid[x][y].color
+            if color == "white":
+                cell.configure(fg_color = "black")
+            else:
+                cell.configure(fg_color = "white")
+           
     
     # utility function that validates input as integer
     def validate_number(self, text):

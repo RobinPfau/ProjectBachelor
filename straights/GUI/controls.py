@@ -13,12 +13,14 @@ class Controls(ctk.CTkFrame):
         self.grid = grid
         self.keys = json_keys
         self.solutions = None
+        
                
         self.converter = Converter()
 
         self.create_numpad(colour)
         self.create_control_buttons()
         self.create_loading()
+        self.create_creative_buttons()
                 
     #creates the numpad
     def create_numpad(self, colour):
@@ -86,7 +88,23 @@ class Controls(ctk.CTkFrame):
         self.options_sub.pack()
         self.options_sub.configure(state = "disabled")
 
-    #numpad buttons that enters the pressed number into cell
+    def create_creative_buttons(self):
+        frame = ctk.CTkFrame(self)
+
+        for row in range(2):
+             for col in range(2):
+                frame.grid_rowconfigure(row, weight=1)
+                frame.grid_columnconfigure(col, weight=1)
+
+        self.button_creative = ctk.CTkButton(frame, width = 100, text = "CREATIVE MODE" ,command=  lambda: self.on_press_creative_mode())
+        self.button_creative.grid(row = 0, column = 0, fill = None, pady = 10, padx =5)
+        
+        self.button_swap_color = ctk.CTkButton(frame, width = 100, text = "SWAP COLOR" ,command=  lambda: self.on_press_swap_color())
+        #button_swap_color.grid(row = 1, column = 0, fill = None, pady = 10, padx =5)
+        
+       
+        frame.pack(expand = False, fill = None, anchor = "s", padx = 10, pady = 10)
+        
     def on_press_number(self, number):
         #print(number)
         focused_cell = self.grid.selected_cell
@@ -173,3 +191,18 @@ class Controls(ctk.CTkFrame):
     def on_press_toggle_notes(self):
         pass        
       
+    def on_press_creative_mode(self):
+        if self.grid.creative_mode == True:
+            self.button_swap_color.grid_forget()
+            
+            self.button_creative.configure(fg_color = ['#3a7ebf', '#1f538d'])
+            self.grid.creative_mode = False
+            print("leaving")
+
+        else:
+            self.button_swap_color.grid(row = 1, column = 0, fill = None, pady = 10, padx =5)
+            self.button_creative.configure(fg_color = "darkgreen")
+            self.grid.creative_mode = True
+
+    def on_press_swap_color(self):
+        self.grid.swap_color()
