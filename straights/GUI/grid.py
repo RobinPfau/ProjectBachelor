@@ -14,18 +14,19 @@ class Grid(ctk.CTkFrame):
         self.cells = {}
         self.notes = False
         self.creative_mode = False
+        self.emptypuzzle = "0"*162
+        
 
         self.vaidate_command = parent.register(self.validate_number)
 
         self.create_grid(puzzlelist)
-        
+
+    #destroys all ctkinter elements in the grid    
     def delete_grid(self):
         self.frame.destroy()
 
     def create_grid(self, puzzlelist):
-
         self.matrix = Matrix(puzzlelist)
-        
         #puzzle frame
         self.frame = ctk.CTkFrame(self)
                 
@@ -73,7 +74,6 @@ class Grid(ctk.CTkFrame):
     def on_click_in(self, event, cell):
         
         self.selected_cell = cell
-        print(self.creative_mode)
         if self.creative_mode == False:
             for list in self.matrix.straights:
                 for element in list:
@@ -86,7 +86,6 @@ class Grid(ctk.CTkFrame):
                             self.cells[x,y].configure(fg_color = "lightgreen")
 
             cell.configure(fg_color = "green")
-
 
     #needed for losing focus 
     def on_click_out(self, event,):
@@ -107,13 +106,23 @@ class Grid(ctk.CTkFrame):
             current_value = cell.get()[0]
             cell.delete(0, "end")
             if event.char.isdigit() and event.char != "0" and cell.cget("state") != "readonly":
+                
+
+                if self.creative_mode == False:
+                    self.selected_cell.configure(text_color = "blue")
+                else:
+                    if self.matrix.grid[x][y].color == "black":
+                        self.selected_cell.configure(text_color = "white")
+                    else:
+                        self.selected_cell.configure(text_color = "black")
+        
                 cell.insert(0, event.char)
                 self.matrix.grid[x][y].value = int(event.char)
                 
                 print(self.matrix.grid[x][y].value)
 
             elif current_value in "123456789":
-                cell. insert(0, current_value)
+                cell.insert(0, current_value)
 
     #button function that deletes value in highlighted cell
     def on_delete(self, event):
@@ -155,11 +164,11 @@ class Grid(ctk.CTkFrame):
             solution = self.matrix.grid[x][y].solution
             if cell.get():
                 if solution == int(cell.get()[0]): 
-                    cell.configure(fg_color = "lightblue")
+                    cell.configure(text_color = "lightgreen")
                 else:
-                    cell.configure(fg_color = "orange")
+                    cell.configure(text_color = "red")
     
-    # TODO: updates cell to correct value
+    #updates cell to correct value
     def reveal_cell_solution(self):
         if self.selected_cell:
             cell = self.selected_cell
@@ -172,17 +181,20 @@ class Grid(ctk.CTkFrame):
             cell.insert(0, str(solution))
 
     def swap_color(self):
-        if self.selected_cell and self.creative_mode:
+       
             cell = self.selected_cell
             x = cell.x
             y = cell.y
             color = self.matrix.grid[x][y].color
-            if color == "white":
-                cell.configure(fg_color = "black")
-            else:
-                cell.configure(fg_color = "white")
            
-    
+            if color == "white":
+                cell.configure(fg_color = "black", text_color = "white")      
+                self.matrix.grid[x][y].color = "black"
+
+            else:
+                cell.configure(fg_color = "white",text_color = "black")
+                self.matrix.grid[x][y].color = "white"
+         
     # utility function that validates input as integer
     def validate_number(self, text):
         return text == "" or text.isdigit()
