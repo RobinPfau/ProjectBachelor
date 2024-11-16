@@ -1,5 +1,5 @@
 class GridElement():
-    def __init__(self, value: int = 0 , color: str = "White", x: int = 0, y: int = 0):
+    def __init__(self, value: int = 0 , color: str = "white", x: int = 0, y: int = 0):
         self.value = value
         self.color = color
         self.x = x
