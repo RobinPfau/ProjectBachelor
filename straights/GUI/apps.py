@@ -8,6 +8,7 @@ from SOLVER.checker import Solver
 import json
 
 puzzle0 = "0"*162
+puzzletest = "000000000900600200007000000100000000000000020004000609200000000000020000000000807001100011000000000110001000100010010001000110000100001000110001000000000100001100"
 
 class App (ctk.CTk):
     def __init__(self, title, size, **kwargs):
@@ -28,12 +29,12 @@ class App (ctk.CTk):
             self.puzzles = json.load(file)
 
         self.converter = Converter()
-        puzzlelist = self.converter.convert(puzzle0)
+        puzzlelist = self.converter.convert(puzzletest)
         #puzzlelist = self.converter.convert(self.puzzles["symmetric"]["medium"]["12.11.24"])
 
         #create GUI
         self.grid = Grid(parent = self, x = 0, y = 0, rwidth = 0.65, rheight = 1, puzzlelist = puzzlelist)
-        self.controls = Controls(self, 0.675, 0, "black", 0.3, 1, self.grid, self.puzzles)
+        self.controls = Controls(self, 0.675, 0, "black", 0.3, 1, self.grid, self.puzzles, puzzlelist)
         
         #run
         self.mainloop()
