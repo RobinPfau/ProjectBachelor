@@ -13,8 +13,7 @@ class Controls(ctk.CTkFrame):
         self.grid = grid
         self.keys = json_keys
         self.solutions = None
-        
-               
+                       
         self.converter = Converter()
 
         self.create_numpad(colour)
@@ -81,13 +80,13 @@ class Controls(ctk.CTkFrame):
         self.options_main = ctk.CTkOptionMenu(self, values = list(self.keys.keys()), command = self.on_press_select)
         self.options_main.set("Choose Category")
         self.options_main.pack()
-
-        
+      
         self.options_sub = ctk.CTkOptionMenu(self, values = ["Choose Category First"], command = self.on_press_subselect)
         self.options_sub.set("Coose Difficulty")
         self.options_sub.pack()
         self.options_sub.configure(state = "disabled")
 
+    # creates creative mode interface
     def create_creative_buttons(self):
         frame = ctk.CTkFrame(self)
 
@@ -99,23 +98,34 @@ class Controls(ctk.CTkFrame):
         self.button_creative = ctk.CTkButton(frame, width = 100, text = "CREATIVE MODE" ,command=  lambda: self.on_press_creative_mode())
         self.button_creative.grid(row = 0, column = 0, fill = None, pady = 10, padx =5)
         
-        self.button_swap_color = ctk.CTkButton(frame, width = 100, text = "SWAP COLOR" ,command=  lambda: self.on_press_swap_color())
-        #button_swap_color.grid(row = 1, column = 0, fill = None, pady = 10, padx =5)
+        self.button_swap_color = ctk.CTkButton(frame, fg_color = "darkgreen", width = 100, text = "SWAP COLOR" ,command = lambda: self.on_press_swap_color())
         
+        self.button_save_creative = ctk.CTkButton(frame, fg_color = "darkgreen", width = 100, text = "EXPORT Puzzle" ,command = lambda: self.on_press_save())
+
+        self.button_solve_creative = ctk.CTkButton(frame, fg_color = "darkgreen", width = 100, text = "SOLVE Puzzle" ,command = lambda: self.on_press_solve_creative())
        
         frame.pack(expand = False, fill = None, anchor = "s", padx = 10, pady = 10)
-        
+
+    #functionality of numberpad    
     def on_press_number(self, number):
-        #print(number)
         focused_cell = self.grid.selected_cell
+             
         if focused_cell is not None and focused_cell.cget("state") != "readonly":
             focused_cell.delete(0, "end")
             focused_cell.insert(0, number)
-            self.grid.matrix.grid[focused_cell.x][focused_cell.y].value = number
-            print(self.grid.matrix.grid[focused_cell.x][focused_cell.y].value)
+            matrix_cell = self.grid.matrix.grid[focused_cell.x][focused_cell.y]
+            matrix_cell.value = number
+
+            if self.grid.creative_mode == False:
+                focused_cell.configure(text_color = "blue")
+            else:
+                if matrix_cell.color == "black":
+                    focused_cell.configure(text_color = "white")
+                else:
+                    focused_cell.configure(text_color = "black")
         else:
             print("no active cell")
-
+         
     #dropdown  for puzzletype selection
     def on_press_select(self, main_cat):
         
@@ -131,14 +141,19 @@ class Controls(ctk.CTkFrame):
         self.puzzlestring = random.choice(list(self.keys[selected_main][sub_cat].values()))
         selected_puzzle = self.converter.convert(self.puzzlestring)
         
-        self.grid.delete_grid()
-        self.grid.create_grid(selected_puzzle)
-
         print(f"Selected path: {selected_main}/{sub_cat}")
+
+        self.load_puzzle(selected_puzzle)
 
         self.solutions = self.solve()
         if self.solutions:
             self.grid.save_solution(self.solutions)
+    
+    #loads a new grid with provided puzzle and attempts to find a solution
+    def load_puzzle(self, selected_puzzle):
+
+        self.grid.delete_grid()
+        self.grid.create_grid(selected_puzzle)
 
     #button that clears the selected cell
     def on_press_delete(self):
@@ -175,11 +190,11 @@ class Controls(ctk.CTkFrame):
         else: 
             print("error solution none")     
 
-    # TODO: checks if the active sell holds the correct value
+    #checks if the active sell holds the correct value
     def on_press_check(self):
         self.grid.check_cell_solution()
 
-    # TODO. reveals the correct value in the selected cell
+    #reveals the correct value in the selected cell
     def on_press_reveal(self):
        self.grid.reveal_cell_solution()
 
@@ -191,18 +206,76 @@ class Controls(ctk.CTkFrame):
     def on_press_toggle_notes(self):
         pass        
       
+    #starts the creative mode, disables map selection  
     def on_press_creative_mode(self):
         if self.grid.creative_mode == True:
             self.button_swap_color.grid_forget()
-            
+            self.button_save_creative.grid_forget()
+            self.button_solve_creative.grid_forget()
             self.button_creative.configure(fg_color = ['#3a7ebf', '#1f538d'])
+
             self.grid.creative_mode = False
-            print("leaving")
-
+            self.options_main.configure(state = "normal")
+        
         else:
-            self.button_swap_color.grid(row = 1, column = 0, fill = None, pady = 10, padx =5)
-            self.button_creative.configure(fg_color = "darkgreen")
-            self.grid.creative_mode = True
+            self.load_puzzle(self.converter.convert("0"*162))
 
+            self.button_swap_color.grid(row = 1, column = 0, fill = None, pady = 10, padx =5)
+            self.button_save_creative.grid(row = 1, column = 1, fill = None, pady = 10, padx =5)
+            self.button_solve_creative.grid(row = 0, column = 1, fill = None, pady = 10, padx =5)
+            self.button_creative.configure(fg_color = "darkgreen")
+
+            self.grid.creative_mode = True
+            self.options_main.configure(state = "disabled")
+            self.options_sub.configure(state = "disabled")
+    
+    #TODO: Create confirmation for swapping modes
+    #def confirm_switch(self):
+     #   response = messagebox.askyesno("Confirm Switch", "Are you sure= Unsaved Progress will be lost.")
+     #  if response:
+      #      self.switch.mode()
+      #  else: 
+       #     print("switch cancelled")
+
+
+    #swaps black to white and back for creative mode
     def on_press_swap_color(self):
-        self.grid.swap_color()
+        if self.grid.selected_cell:
+            self.grid.swap_color()
+
+    #TODO: for now prints the created puzzle as a string
+    #      should save the string to be loaded later
+    def on_press_save(self):
+        self.save_string()
+
+    #returns the string of the puzzle created
+    def save_string(self):
+        puzzlestring = ""
+        intstring = ""
+        colorstring = ""
+        for x, row in enumerate(self.grid.matrix.grid):
+            for y, col in enumerate(row):
+                value =  str(col.value)
+                if col.color == "black":
+                    color = "1"
+                else:
+                    color =  "0"
+                intstring += value
+                colorstring += color
+
+        puzzlestring = intstring + colorstring
+       
+        print(puzzlestring)
+        return (puzzlestring)
+    
+
+    def on_press_solve_creative(self):
+        self.grid.matrix.find_straights()
+        self.puzzlestring = self.save_string()
+        self.solutions = self.solve()
+
+        if self.solutions:
+            self.grid.save_solution(self.solutions)
+
+        self.on_press_solve()
+        print(self.solutions)
