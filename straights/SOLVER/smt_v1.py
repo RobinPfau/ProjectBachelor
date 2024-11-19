@@ -135,8 +135,13 @@ class SmtSolver():
                 row = []
                 for y in range(self.matrix_size):
                     # Get the model value for each cell in the grid
+                    
                     cell_value = self.solver.getValue(grid[x][y]).getIntegerValue()
-                    row.append(cell_value)
+
+                    if cell_value > 0:
+                        row.append(cell_value)
+                    else:
+                        row.append(0)
 
                 solution.append(row)
             print(solution)
