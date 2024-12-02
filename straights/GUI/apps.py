@@ -5,6 +5,7 @@ from .controls import Controls
 from .matrix import Matrix
 from converter import Converter
 from SOLVER.checker import Solver
+from .image import Picture
 import json
 
 puzzle0 = "0"*162
@@ -34,6 +35,7 @@ class App (ctk.CTk):
         #create GUI
         self.grid = Grid(parent = self, x = 0, y = 0, rwidth = 0.65, rheight = 1, puzzlelist = puzzlelist)
         self.controls = Controls(self, 0.675, 0, "black", 0.3, 1, self.grid, self.puzzles)
-        
+        self.image = None #Picture(self, 700, 700)
+
         #run
         self.mainloop()
