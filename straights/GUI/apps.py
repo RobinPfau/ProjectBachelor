@@ -33,7 +33,7 @@ class App (ctk.CTk):
 
         #create GUI
         self.grid = Grid(parent = self, x = 0, y = 0, rwidth = 0.65, rheight = 1, puzzlelist = puzzlelist)
-        self.controls = Controls(self, 0.675, 0, "black", 0.3, 0.7,self.grid, self.puzzles)
+        self.controls = Controls(self, 0.675, 0, "black", 0.3, 1, self.grid, self.puzzles)
         
         #run
         self.mainloop()

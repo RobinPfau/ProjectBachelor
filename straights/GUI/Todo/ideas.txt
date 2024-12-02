@@ -3,6 +3,8 @@ button zum wechsel
 
 ocr sceenscapture für Str8ts
 
+manuelle eingabe von puzzlen in der GUI WICHTIG
+zufälliges puzzle bis  lösbar
 
 
 hilfe button revealed ausgewählte zelle

@@ -24,7 +24,7 @@ class Matrix():
                 
             self.grid.append(current_row)
         
-        self.straights = self.find_straights()
+        self.find_straights()
 
               
     #updates a single cell of the matrix
@@ -81,6 +81,5 @@ class Matrix():
 
             if len(current_straight) > 1: 
                 straights.append(current_straight)
-
-        return straights
+        self.straights = straights
     

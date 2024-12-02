@@ -25,6 +25,7 @@ class SmtSolver():
        # return initial_grid
     
     def load_straights(self):
+       
         straightlist = []
         for list in self.matrix.straights:
             straight = []
