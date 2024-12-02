@@ -9,12 +9,14 @@ class Grid(ctk.CTkFrame):
         #setup frame
         super().__init__(parent, **kwargs)
         self.place(relx = x, rely= y, relwidth = rwidth, relheight = rheight)
+
         self.selected_cell = None
         self.matrix = None
-        self.cells = {}
+        self.cells = {}         # Store (row, col) -> Cell mappings
         self.notes = False
         self.creative_mode = False
         self.emptypuzzle = "0"*162
+        self.matrix_size = 9
         
 
         self.vaidate_command = parent.register(self.validate_number)
@@ -26,15 +28,15 @@ class Grid(ctk.CTkFrame):
         self.frame.destroy()
 
     def create_grid(self, puzzlelist):
-        self.matrix = Matrix(puzzlelist)
+        self.matrix = Matrix(puzzlelist, self.matrix_size)
         #puzzle frame
         self.frame = ctk.CTkFrame(self)
                 
-        for row in range(9):
+        for row in range(self.matrix_size):
             rowlist = self.matrix.grid[row]
             self.frame.grid_rowconfigure(row, weight=1)
         
-            for col in range(9):
+            for col in range(self.matrix_size):
                 self.frame.grid_columnconfigure(col, weight=1)
                 
                 #border_frame = ctk.CTkFrame(self.frame, fg_color = "white")
@@ -90,8 +92,8 @@ class Grid(ctk.CTkFrame):
     #needed for losing focus 
     def on_click_out(self, event,):
         if self.creative_mode is False:
-            for x in range(9):
-                for y in range(9):
+            for x in range(self.matrix_size):
+                for y in range(self.matrix_size):
                     if self.cells[x,y].cget("state") != "disabled":
                         self.cells[x,y].configure(fg_color = "white")
 
@@ -157,16 +159,15 @@ class Grid(ctk.CTkFrame):
 
     # TODO: checks if solution and value in Grid are the same
     def check_cell_solution(self):
-        if self.selected_cell:
-            cell = self.selected_cell
-            x = cell.x
-            y = cell.y
-            solution = self.matrix.grid[x][y].solution
-            if cell.get():
-                if solution == int(cell.get()[0]): 
-                    cell.configure(text_color = "lightgreen")
-                else:
-                    cell.configure(text_color = "red")
+    
+        for x in range(self.matrix_size):
+            for y in range(self.matrix_size):
+                solution = self.matrix.grid[x][y].solution
+                cell = self.cells[x, y]
+                if cell.get() and cell.locked == False:
+                    if solution != int(cell.get()[0]): 
+                        cell.configure(text_color = "red")
+
     
     #updates cell to correct value
     def reveal_cell_solution(self):
@@ -174,14 +175,14 @@ class Grid(ctk.CTkFrame):
             cell = self.selected_cell
             x = cell.x
             y = cell.y
-
+            cell.configure(text_color = "blue")
             solution = self.matrix.grid[x][y].solution
         
             cell.delete(0, "end")
             cell.insert(0, str(solution))
 
     def swap_color(self):
-       
+        if self.selected_cell:
             cell = self.selected_cell
             x = cell.x
             y = cell.y
@@ -190,10 +191,14 @@ class Grid(ctk.CTkFrame):
             if color == "white":
                 cell.configure(fg_color = "black", text_color = "white")      
                 self.matrix.grid[x][y].color = "black"
+                cell.locked = True
 
             else:
                 cell.configure(fg_color = "white",text_color = "black")
                 self.matrix.grid[x][y].color = "white"
+                cell.locked = False
+        else:
+            print("No Cell Selected Swap")
          
     # utility function that validates input as integer
     def validate_number(self, text):
