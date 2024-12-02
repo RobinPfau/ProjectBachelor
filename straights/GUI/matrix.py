@@ -1,6 +1,6 @@
 class Matrix():
-    def __init__(self, puzzle):
-        self.matrix_size = 9
+    def __init__(self, puzzle, size = 9):
+        self.matrix_size = size
         self.solved = False
         self.grid = []
         self.straights = []
