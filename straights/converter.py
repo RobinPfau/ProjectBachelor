@@ -5,11 +5,19 @@ class Converter():
         pass
 
     def convert(self, puzzlestring):
-        intstring = puzzlestring[:81]
-        colorstring = puzzlestring[81:]
+
+        if len(puzzlestring) % 2  != 0:
+            raise ValueError ("String must be even number of Char")
+        if not puzzlestring.isdigit():
+            raise ValueError ("String must be only digits")
+        
+        length = len(puzzlestring) // 2
+        intstring = puzzlestring[:length]
+        colorstring = puzzlestring[length:]
         puzzle= []
 
-        for i in range(len(intstring)): 
+        
+        for i in range(length): 
             value = intstring[i]
             color = colorstring[i]
             element = GridElement(int(value), self.colormap.get(color))
