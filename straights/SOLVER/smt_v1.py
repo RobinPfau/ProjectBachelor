@@ -45,7 +45,7 @@ class SmtSolver():
         straights = self.load_straights()
         int_sort = self.solver.getIntegerSort()    
 
-        grid = [[self.solver.mkConst(int_sort, f"cell_{x}_{y}") for x in range(self.matrix_size)] for y in range(self.matrix_size)]
+        grid = [[self.solver.mkConst(int_sort, f"cell_{x}_{y}") for y in range(self.matrix_size)] for x in range(self.matrix_size)]
         counter = 0    
 
         for x in range (self.matrix_size):
@@ -62,7 +62,7 @@ class SmtSolver():
                     # Constraint: each cell must be greater or equal than 1
                     self.solver.assertFormula(self.solver.mkTerm(Kind.GEQ, grid[x][y], self.solver.mkInteger(1)))
                     # Constraint: each cell must be less or equal than 9
-                    self.solver.assertFormula(self.solver.mkTerm(Kind.LEQ, grid[x][y], self.solver.mkInteger(9)))
+                    self.solver.assertFormula(self.solver.mkTerm(Kind.LEQ, grid[x][y], self.solver.mkInteger(self.matrix_size)))
                 counter += 1
 
         #positive cells
@@ -78,7 +78,7 @@ class SmtSolver():
                 for k in range(y + 1, self.matrix_size):
                     # Constraint: each cell must be distinct in its row:
                     self.solver.assertFormula(self.solver.mkTerm(Kind.DISTINCT, grid[x][y], grid[x][k]))
-
+                
 
         #distinct values in col
         for y in range(self.matrix_size):
