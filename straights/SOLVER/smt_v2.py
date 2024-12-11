@@ -10,7 +10,7 @@ class SmtSolver_v2():
 
         self.solver.setOption("produce-models", "true")
         # self.solver.setOption("decision-stategy", "value")
-        #self.solver.setOption("time-limit", "10000")
+        # self.solver.setOption("time-limit", "10000")
 
         self.int_sort = self.solver.getIntegerSort()   
         self.bool_sort = self.solver.getBooleanSort()
@@ -49,7 +49,7 @@ class SmtSolver_v2():
                                                       self.color_matrix[x][y],  
                                                       self.solver.mkBoolean(black))
                 self.solver.assertFormula(color_constraint)
-                #print(color_constraint)
+               
 
                 # Constraints for the value based on its color and given value
                 if value != 0:  # If a fixed value is provided
@@ -58,7 +58,7 @@ class SmtSolver_v2():
                         self.value_matrix[x][y],  
                         self.solver.mkInteger(value))
                 
-                elif black:  # If the cell is black, its value must be ≤ -1
+                elif black:  # If the cell is black, its value is set to < 0 (ignored)
                     value_constraint = self.solver.mkTerm(
                         Kind.LEQ,
                         self.value_matrix[x][y],
@@ -326,5 +326,33 @@ class SmtSolver_v2():
                 return 0
             return cell_value
         else:
-            print("no cell value possible")
-           
+            print("no cell value possible")#
+
+
+    def find_next_cells(self, puzzlestring):
+
+        possibilities = {}
+
+        self.setup(puzzlestring)
+        self.value_rule()
+
+        for x in range(self.matrix_size):
+            for y in range(self.matrix_size):
+                possible_values = []
+
+                for value in range (1,self.matrix_size):
+                    temp_constraint = self.solver.mkTerm(
+                        Kind.EQUAL,
+                        self.value_matrix[x][y],
+                        self.solver.mkInteger(value)
+                    )
+                    self.solver.push()
+                    self.solver.assertFormula(temp_constraint)
+
+                    if self.solver.checkSat().isSat():
+                        possible_values.append(value)
+                    
+                    self.solver.pop()
+                    
+                if possible_values:
+                    possibilities[(x, y)] = possible_values
