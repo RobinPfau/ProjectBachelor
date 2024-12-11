@@ -13,3 +13,34 @@ check button markiert fehler für alle oder ausgewählte
 
 hilfestellung
 punkte mit nur noch einer lösung revealen als hilfestellung
+
+knopf öffnet fenster um sting einzugeben
+
+creative mode beenden lädt puzzle als game
+puzzle laden hat keine solution
+
+BUGS:
+reveal muss farbe anpassen
+solve auch
+
+zahl is weiß wenn markiert aus dem creative mode
+
+macnhmal 2 zahlen
+
+schwarze zelle weiß gemacht wurde mit null gefüllt
+
+bei creative mode wechsel farben auf schwarz, nicht erst bei schreiben
+
+
+extra solver(singlesolver) der aus dem puzzle eine einzige zelle löst, 
+vllt mehere werte zurück geben kann
+
+000000000000000000000000000000000000000000000000000000000000000000000000000000000100100100000000000001001001110001100000000000001100011100100100000000000001001001
+
+
+funktion die im solver für jede zelle die anzahl der aktuellen legalen möglichkeiten berechnet  
+
+bei neun zahlen in einer reihe/spalte, nicht auf straight checken!^
+reätzel teilweise lösen um früher fehler zu finden
+
+constraint name be min max besser mit "row" / "col" und dann x/y
