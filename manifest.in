@@ -1,0 +1,3 @@
+recursive-include straights/DATA *.png *.json *.txt
+recursive-include straights/GUI *
+recursive-include straights/SOLVER *
