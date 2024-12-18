@@ -25,7 +25,7 @@ class App (ctk.CTk):
         self. matrix_size = 9
     
         #create and use converter
-        with open("straights/DATA/puzzles.json", "r") as file:
+        with open("DATA/puzzles.json", "r") as file:
             self.puzzles = json.load(file)
 
         self.converter = Converter()
