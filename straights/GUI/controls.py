@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from converter import Converter
+from DATA.converter import Converter
 from SOLVER.smt_v1 import SmtSolver
 from SOLVER.creator_v2 import SmtCreator
 from SOLVER.smt_v2 import SmtSolver_v2
@@ -206,6 +206,7 @@ class Controls(ctk.CTkFrame):
                         self.grid.matrix.grid[row][col].value = value
                         cell.delete(0, "end")
                         cell.insert(0, str(value))
+                        cell.configure(text_color = "blue")
         else: 
             print("error solution none")     
 

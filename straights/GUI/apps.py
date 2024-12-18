@@ -3,7 +3,7 @@ import customtkinter as ctk
 from .grid import Grid
 from .controls import Controls
 from .matrix import Matrix
-from converter import Converter
+from DATA.converter import Converter
 from SOLVER.checker import Solver
 from .image import Picture
 import json
@@ -25,7 +25,7 @@ class App (ctk.CTk):
         self. matrix_size = 9
     
         #create and use converter
-        with open("puzzles.json", "r") as file:
+        with open("straights/DATA/puzzles.json", "r") as file:
             self.puzzles = json.load(file)
 
         self.converter = Converter()

@@ -1,4 +1,4 @@
-from gridelement import GridElement 
+from .gridelement import GridElement 
 
 class Converter():
     def __init__(self):

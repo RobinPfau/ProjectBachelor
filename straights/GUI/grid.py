@@ -67,7 +67,7 @@ class Grid(ctk.CTkFrame):
                 self.cells[row,col] = cell
                 #cell.grid(padx = 1,pady = 1)
                 
-                cell.grid(row = row, column = col, fill = None, padx =1 , pady = 1) 
+                cell.grid(row = row, column = col, fill = None, padx = 1, pady = 1) 
                 
   
         self.frame.pack(expand = False, fill= None, anchor = "nw", padx = 20, pady = 20)
@@ -90,7 +90,7 @@ class Grid(ctk.CTkFrame):
             cell.configure(fg_color = "green")
 
     #needed for losing focus 
-    def on_click_out(self, event,):
+    def on_click_out(self, event):
         if self.creative_mode is False:
             for x in range(self.matrix_size):
                 for y in range(self.matrix_size):
@@ -140,7 +140,6 @@ class Grid(ctk.CTkFrame):
         self.matrix.grid[x][y].value = 0
         print(self.matrix.grid[x][y].value)
         print("löscher")
-        # enter the value into backend
         #print(event.char)    
 
     #update the displayed value in a cell
@@ -181,6 +180,8 @@ class Grid(ctk.CTkFrame):
             cell.delete(0, "end")
             cell.insert(0, str(solution))
 
+
+    #swap color of a cell in creative mode
     def swap_color(self):
         if self.selected_cell:
             cell = self.selected_cell
