@@ -3,10 +3,10 @@ import customtkinter as ctk
 from .grid import Grid
 from .controls import Controls
 from .matrix import Matrix
-from DATA.converter import Converter
-from SOLVER.checker import Solver
+from .converter import Converter
+from .checker import Solver
 from .image import Picture
-from DATA.puzzles import puzzles
+from .puzzles import puzzles
 
 import json
 
