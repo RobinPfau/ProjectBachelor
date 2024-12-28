@@ -220,7 +220,7 @@ class Controls(ctk.CTkFrame):
 
     # TODO: offer a not yet defined help
     def on_press_help(self):
-
+        return
         #solver = SmtSolver_v2()
         #value = solver.solve_single(self.puzzlestring, 4, 4)
 
