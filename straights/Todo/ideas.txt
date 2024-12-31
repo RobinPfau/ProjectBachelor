@@ -35,3 +35,5 @@ funktion die im solver für jede zelle die anzahl der aktuellen legalen möglich
 reätzel teilweise lösen um früher fehler zu finden
 
 19.11 ???
+
+revael breajs black cells

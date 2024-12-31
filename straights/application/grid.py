@@ -59,6 +59,7 @@ class Grid(ctk.CTkFrame):
                 content = rowlist[col]
                 if content.value != 0:
                     cell.insert(0, content.value)
+                cell.color = content.color
                 cell.configure(fg_color = content.color, text_color = content.get_text_color(), state = content.get_state())
                 if content.get_state() == "normal":
                     cell.locked = False
@@ -164,7 +165,8 @@ class Grid(ctk.CTkFrame):
                 solution = self.matrix.grid[x][y].solution
                 cell = self.cells[x, y]
                 if cell.get() and cell.locked == False:
-                    if solution != int(cell.get()[0]): 
+                    if solution != int(cell.get()[0]):
+                        cell.color = "red"
                         cell.configure(text_color = "red")
 
     
@@ -174,7 +176,9 @@ class Grid(ctk.CTkFrame):
             cell = self.selected_cell
             x = cell.x
             y = cell.y
-            cell.configure(text_color = "blue")
+            if cell.color == "red":
+                cell.color = "blue"
+                cell.configure(text_color = "blue")
             solution = self.matrix.grid[x][y].solution
         
             cell.delete(0, "end")
@@ -190,11 +194,13 @@ class Grid(ctk.CTkFrame):
             color = self.matrix.grid[x][y].color
            
             if color == "white":
+                cell.color = "black"
                 cell.configure(fg_color = "black", text_color = "white")      
                 self.matrix.grid[x][y].color = "black"
                 cell.locked = True
 
             else:
+                cell.color = "white"
                 cell.configure(fg_color = "white",text_color = "black")
                 self.matrix.grid[x][y].color = "white"
                 cell.locked = False

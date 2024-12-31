@@ -8,3 +8,4 @@ class Cell(ctk.CTkEntry):
         self.y = ycoord
         self.locked = locked
         self.frame = frame
+        self.color = "Blue"
