@@ -16,6 +16,11 @@ venv\scripts\activate
 #install projectBachelor
 pip install git+https://github.com/RobinPfau/ProjectBachelor
 
+#run app
+str8ts
+
+___________________________
+
 #if no git installed (not recommended)
 #download and unpack next to venv from https://github.com/RobinPfau/ProjectBachelor
 pip install setuptools
