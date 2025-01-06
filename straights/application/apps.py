@@ -7,6 +7,7 @@ from .converter import Converter
 from .checker import Solver
 from .image import Picture
 from .puzzles import puzzles
+from .controller import Controller
 
 import json
 
@@ -21,11 +22,12 @@ class App (ctk.CTk):
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("dark-blue")
 
+
+        #sets the App Window
         self.title(title)
         self.geometry(f'{size[0]}x{size[1]}')
         self.minsize(500,500)
         self.resizable(False, False)
-        self. matrix_size = 9
     
         #create and use converter
        # with open("DATA/puzzles.json", "r") as file:
