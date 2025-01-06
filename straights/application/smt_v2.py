@@ -76,7 +76,8 @@ class SmtSolver_v2():
                                                                     self.solver.mkInteger(self.matrix_size))))
                 # Add the value constraint to the list of constraints
                 self.solver.assertFormula(value_constraint)
-                print(value_constraint, color_constraint)
+                #print(value_constraint, color_constraint)
+
 
     def unique_rule(self):
                
@@ -85,7 +86,7 @@ class SmtSolver_v2():
             col = [self.value_matrix[x][y] for y in range(self.matrix_size)]
             unique_col_constraint = self.solver.mkTerm(Kind.DISTINCT, *col)
             self.solver.assertFormula(unique_col_constraint)
-            print(unique_col_constraint)
+            #print(unique_col_constraint)
             
 
         for y in range(self.matrix_size):
@@ -93,7 +94,7 @@ class SmtSolver_v2():
             row = [self.value_matrix[x][y] for x in range(self.matrix_size)]
             unique_row_constraint = self.solver.mkTerm(Kind.DISTINCT, *row)
             self.solver.assertFormula(unique_row_constraint)
-            print(unique_row_constraint)
+            #print(unique_row_constraint)
 
 
     def consecutive_rule(self):
@@ -160,7 +161,7 @@ class SmtSolver_v2():
         # Enforce the constraints together
         straight_constraint = self.solver.mkTerm(Kind.AND, *consecutive_constraint)
         self.solver.assertFormula(straight_constraint)
-        print(straight_constraint)
+        #print(straight_constraint)
 
 
     def solve(self, puzzlestring):
@@ -268,18 +269,18 @@ class SmtSolver_v2():
         row_list = [self.value_matrix[row][y] for y in range(self.matrix_size)]
         unique_row_constraint = self.solver.mkTerm(Kind.DISTINCT, *row_list)
         self.solver.assertFormula(unique_row_constraint)
-        print(unique_row_constraint)
+        #print(unique_row_constraint)
 
         column_list = [self.value_matrix[x][col] for x in range(self.matrix_size)]
         unique_col_constraint = self.solver.mkTerm(Kind.DISTINCT, *column_list)
         self.solver.assertFormula(unique_col_constraint)
-        print(unique_col_constraint)
+        #print(unique_col_constraint)
 
 
     def consecutive_single_rule(self, row, col):
         #black cell -> no straights
         if int(self.colorstring[row * self.matrix_size + col]) == 1:
-                return
+            return
         
         straight = []    
         for y in range(self.matrix_size):   
@@ -289,10 +290,10 @@ class SmtSolver_v2():
                 straight.append(self.value_matrix[row][y])
             else:
                 if len(straight) > 1: 
-                    self.enforce_consecutive(straight, row)
+                    self.enforce_consecutive(straight, "row", row)
     
         if len(straight) > 1: 
-            self.enforce_consecutive(straight, row)
+            self.enforce_consecutive(straight, "row", row)
             straight = []
 
         straight = []  
@@ -304,11 +305,52 @@ class SmtSolver_v2():
                 straight.append(self.value_matrix[x][col])
             else: 
                 if len(straight) > 1: 
-                    self.enforce_consecutive(straight, col)
+                    self.enforce_consecutive(straight, "col", col)
 
         if len(straight) > 1: 
-            self.enforce_consecutive(straight, col)
+            self.enforce_consecutive(straight, "col", col)
 
+
+
+    def straight_single_rule(self, row, col):
+        straight = []       
+        for y in range(col, -1, -1):   
+            black = True if int(self.colorstring[row * self.matrix_size + y]) == 1 else False
+
+            if not black:
+                straight.append(self.value_matrix[row][y])
+            else:
+               break
+        
+        for y in range(col + 1, self.matrix_size):   
+            black = True if int(self.colorstring[row * self.matrix_size + y]) == 1 else False
+
+            if not black:
+                straight.append(self.value_matrix[row][y])
+            else:
+               break
+
+        if len(straight) > 1:
+            self.enforce_consecutive(straight, "row", row)
+
+        for x in range(row, -1, -1):   
+            black = True if int(self.colorstring[x * self.matrix_size + col]) == 1 else False
+
+            if not black:
+                straight.append(self.value_matrix[x][col])
+            else:
+               break
+        
+        for x in range(row + 1, self.matrix_size):   
+            black = True if int(self.colorstring[x * self.matrix_size + col]) == 1 else False
+
+            if not black:
+                straight.append(self.value_matrix[x][col])
+            else:
+               break
+            
+        if len(straight) > 1:
+            self.enforce_consecutive(straight, "col", col)
 
 
     def solve_single(self, puzzlestring, x, y):
@@ -326,7 +368,7 @@ class SmtSolver_v2():
                 return 0
             return cell_value
         else:
-            print("no cell value possible")#
+            print("no cell value possible")
 
 
     def find_next_cells(self, puzzlestring):
@@ -356,3 +398,51 @@ class SmtSolver_v2():
                     
                 if possible_values:
                     possibilities[(x, y)] = possible_values
+
+
+    def find_possibilties(self, temp_puzzlestring):
+        #setup for solver
+        self.setup(temp_puzzlestring)
+        #fill matrix
+        self.value_rule()
+
+        possibilities = {}
+
+        for x in range(self.matrix_size):
+            for y in range(self.matrix_size):
+
+                value = int(self.intstring[x * self.matrix_size + y])
+                black = True if int(self.colorstring[x * self.matrix_size + y]) == 1 else False
+                
+                if not value and not black:
+
+                    self.solver.push()
+                    self.unique_single_rule(x,y)
+                    self.straight_single_rule(x,y)
+
+                    cell = self.value_matrix[x][y]
+                    possible_values = []
+
+                    for candidate in range (1, self.matrix_size + 1):
+                        self.solver.push()
+
+                        self.solver.assertFormula(self.solver.mkTerm
+                                                            (Kind.EQUAL,
+                                                            cell,
+                                                            self.solver.mkInteger(candidate)))
+                        
+                        if self.solver.checkSat().isSat():
+                            possible_values.append(candidate)
+
+                        self.solver.pop()
+
+                    if possible_values: 
+                        possibilities[(x,y)] = possible_values
+                        print("List of Possibilities in ",x , y," : ", possible_values)
+                       
+                    else:
+                        print("no help for", x, y)
+                    
+                    self.solver.pop()
+
+        return possibilities

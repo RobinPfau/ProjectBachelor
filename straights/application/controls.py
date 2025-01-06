@@ -110,7 +110,7 @@ class Controls(ctk.CTkFrame):
 
         self.button_load_creative = ctk.CTkButton(frame, fg_color = "darkgreen", width = 100, text = "LOAD Puzzle" ,command = lambda: self.on_press_load())
 
-        
+
        
         frame.pack(expand = False, fill = None, anchor = "s", padx = 10, pady = 10)
 
@@ -220,10 +220,16 @@ class Controls(ctk.CTkFrame):
 
     # TODO: offer a not yet defined help
     def on_press_help(self):
+        
+        solver = SmtSolver_v2()
+        puzzlestring = self.save_string()
+        possibilities_list = solver.find_possibilties(puzzlestring)
+        
+        for (x, y), possibilities in possibilities_list.items():
+           if len(possibilities) == 1:
+                print(f"one solution in ({x}, {y})")
+        
         return
-        #solver = SmtSolver_v2()
-        #value = solver.solve_single(self.puzzlestring, 4, 4)
-
         creator = SmtCreator(self.matrix_size)
        
         puzzlestring = creator.create_puzzle()
