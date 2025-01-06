@@ -313,6 +313,7 @@ class SmtSolver_v2():
 
 
     def straight_single_rule(self, row, col):
+
         straight = []       
         for y in range(col, -1, -1):   
             black = True if int(self.colorstring[row * self.matrix_size + y]) == 1 else False
@@ -332,7 +333,10 @@ class SmtSolver_v2():
 
         if len(straight) > 1:
             self.enforce_consecutive(straight, "row", row)
+            print(f"straight in row {row} of lentgh {len(straight)}")
 
+
+        straight = []
         for x in range(row, -1, -1):   
             black = True if int(self.colorstring[x * self.matrix_size + col]) == 1 else False
 
@@ -351,6 +355,7 @@ class SmtSolver_v2():
             
         if len(straight) > 1:
             self.enforce_consecutive(straight, "col", col)
+            print(f"straight in col {col} of lentgh {len(straight)}")
 
 
     def solve_single(self, puzzlestring, x, y):

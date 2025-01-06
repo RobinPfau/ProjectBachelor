@@ -95,7 +95,7 @@ class Grid(ctk.CTkFrame):
         if self.creative_mode is False:
             for x in range(self.matrix_size):
                 for y in range(self.matrix_size):
-                    if self.cells[x,y].cget("state") != "disabled":
+                    if self.cells[x,y].cget("state") != "disabled" and self.cells[x,y].cget("fg_color") != "teal":
                         self.cells[x,y].configure(fg_color = "white")
 
     #functionality on typing in cell, update visual and matrix
@@ -180,7 +180,7 @@ class Grid(ctk.CTkFrame):
                 cell.color = "blue"
                 cell.configure(text_color = "blue")
             solution = self.matrix.grid[x][y].solution
-        
+            self.matrix.update_matrix(x, y, solution)
             cell.delete(0, "end")
             cell.insert(0, str(solution))
 

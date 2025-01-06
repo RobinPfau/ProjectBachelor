@@ -228,6 +228,7 @@ class Controls(ctk.CTkFrame):
         for (x, y), possibilities in possibilities_list.items():
            if len(possibilities) == 1:
                 print(f"one solution in ({x}, {y})")
+                self.grid.cells[x,y].configure(fg_color = "teal")
         
         return
         creator = SmtCreator(self.matrix_size)
