@@ -7,10 +7,6 @@ from .converter import Converter
 from .checker import Solver
 from .image import Picture
 from .puzzles import puzzles
-from .controller import Controller
-
-import json
-
 
 puzzle0 = "0"*162
 
