@@ -5,9 +5,6 @@ ocr sceenscapture für Str8ts
 
 zufälliges puzzle bis lösbar
 
-hilfestellung
-punkte mit nur noch einer lösung revealen als hilfestellung
-
 creative mode beenden lädt puzzle als game
 puzzle laden hat keine solution
 
@@ -36,3 +33,5 @@ reätzel teilweise lösen um früher fehler zu finden
 19.11 ???
 
 revael breajs black cells
+
+schwarze zellen beim solven nicht berücksichtigen

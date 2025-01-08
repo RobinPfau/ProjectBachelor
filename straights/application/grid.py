@@ -1,6 +1,8 @@
 import customtkinter as ctk
+import math
 from .matrix import Matrix
 from .cell import Cell
+
 
 class Grid(ctk.CTkFrame):
     
@@ -16,7 +18,7 @@ class Grid(ctk.CTkFrame):
         self.notes = False
         self.creative_mode = False
         self.emptypuzzle = "0"*162
-        self.matrix_size = 9
+        self.matrix_size = int(math.sqrt(len(puzzlelist)))
         
 
         self.vaidate_command = parent.register(self.validate_number)
@@ -28,7 +30,10 @@ class Grid(ctk.CTkFrame):
         self.frame.destroy()
 
     def create_grid(self, puzzlelist):
-        self.matrix = Matrix(puzzlelist, self.matrix_size)
+        self.cells.clear()
+        self.matrix_size = int(math.sqrt(len(puzzlelist)))
+
+        self.matrix = Matrix(puzzlelist)
         #puzzle frame
         self.frame = ctk.CTkFrame(self)
                 
@@ -72,6 +77,7 @@ class Grid(ctk.CTkFrame):
                 
   
         self.frame.pack(expand = False, fill= None, anchor = "nw", padx = 20, pady = 20)
+
     
     #select entry with mouse, indicate visually
     def on_click_in(self, event, cell):

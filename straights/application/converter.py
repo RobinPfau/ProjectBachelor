@@ -22,6 +22,7 @@ class Converter():
             color = colorstring[i]
             element = GridElement(int(value), self.colormap.get(color))
             puzzle.append(element)
+        
         return puzzle
     
 

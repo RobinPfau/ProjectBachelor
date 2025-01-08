@@ -1,10 +1,11 @@
+import math
+
 class Matrix():
-    def __init__(self, puzzle, size = 9):
-        self.matrix_size = size
+    def __init__(self, puzzle):
+        self.matrix_size = int(math.sqrt(len(puzzle)))
         self.solved = False
         self.grid = []
         self.straights = []
-        
         
         self.grid_content = None
 

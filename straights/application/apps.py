@@ -8,7 +8,6 @@ from .checker import Solver
 from .image import Picture
 from .puzzles import puzzles
 
-puzzle0 = "0"*162
 
 class App (ctk.CTk):
     def __init__(self, title, size, **kwargs):
@@ -30,8 +29,10 @@ class App (ctk.CTk):
        #     self.puzzles = json.load(file)
         self.puzzles = puzzles
         self.converter = Converter()
-        puzzlelist = self.converter.convert(puzzle0)
-        #puzzlelist = self.converter.convert(self.puzzles["symmetric"]["medium"]["12.11.24"])
+
+        #placeholder start screen
+        puzzlelist = self.converter.convert( "0"*162)
+        #puzzlelist = self.converter.convert(self.puzzles["small"]["easy"]["#1"])
 
         #create GUI
         self.grid = Grid(parent = self, x = 0, y = 0, rwidth = 0.65, rheight = 1, puzzlelist = puzzlelist)

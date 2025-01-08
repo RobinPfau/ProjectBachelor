@@ -4,6 +4,7 @@ from .smt_v1 import SmtSolver
 from .creator_v2 import SmtCreator
 from .smt_v2 import SmtSolver_v2
 import random as random
+import math
 
 class Controls(ctk.CTkFrame):
     def __init__(self, parent, x, y, colour, rwidth, rheight, grid, json_keys, **kwargs):
@@ -11,13 +12,13 @@ class Controls(ctk.CTkFrame):
         #setup control menu
         super().__init__(parent, **kwargs)
         self. parent = parent
-        self.matrix_size = 9
+        
         self.place(relx = x, rely= y, relwidth = rwidth, relheight = rheight)
         self.button_number = 1
         self.grid = grid
         self.keys = json_keys
         self.solutions = None
-                       
+        self.matrix_size = self.grid.matrix_size   
         self.converter = Converter()
 
         self.create_numpad(colour)
@@ -168,6 +169,8 @@ class Controls(ctk.CTkFrame):
         self.grid.delete_grid()
         self.grid.create_grid(selected_puzzle)
 
+        self.matrix_size = int(math.sqrt(len(selected_puzzle)))
+
     #button that clears the selected cell
     def on_press_delete(self):
         focused_cell = self.grid.selected_cell
@@ -272,6 +275,7 @@ class Controls(ctk.CTkFrame):
 
         else:
             self.load_puzzle(self.converter.convert("0"*162))
+            self.matrix_size = 9
 
             self.button_swap_color.grid(row = 1, column = 0, fill = None, pady = 10, padx =5)
             self.button_save_creative.grid(row = 1, column = 1, fill = None, pady = 10, padx =5)
@@ -281,16 +285,10 @@ class Controls(ctk.CTkFrame):
             self.button_creative.configure(fg_color = "darkgreen")
 
             self.grid.creative_mode = True
+            self.grid.matrix_size = 9
             self.options_main.configure(state = "disabled")
             self.options_sub.configure(state = "disabled")
     
-    #TODO: Create confirmation for swapping modes
-    #def confirm_switch(self):
-     #   response = messagebox.askyesno("Confirm Switch", "Are you sure= Unsaved Progress will be lost.")
-     #  if response:
-      #      self.switch.mode()
-      #  else: 
-       #     print("switch cancelled")
 
 
     #swaps black to white and back for creative mode
@@ -343,10 +341,16 @@ class Controls(ctk.CTkFrame):
 
         def load_and_pass_entry():
             entry_text = text_field.get()
-            colorstring = entry_text[81:]
-            if len(entry_text) == 162 and entry_text.isdigit() and set(colorstring) <= {"0", "1"}:
+            midpoint = int(len(entry_text) //2)
+
+            colorstring = entry_text[midpoint:]
+
+            print(math.sqrt(midpoint))
+
+            if len(entry_text) in {162, 72, 50, 32, 18, 8} and entry_text.isdigit() and set(colorstring) <= {"0", "1"}:
                 popup.destroy()  # Close the popup after getting the text
                 self.pass_and_load(entry_text)  # Pass the entry text to the callback function
+                
             else:
                 print("wrong length or not number")
             
@@ -372,11 +376,17 @@ class Controls(ctk.CTkFrame):
         self.grid.delete_grid()
 
         input_list = self.converter.convert(input_string)
+        print(len(input_list))
+        self.matrix_size = int(math.sqrt(len(input_list)))
         self.grid.create_grid(input_list)
+
         self.puzzlestring = input_string
 
         for x in range(self.matrix_size):
             for y in range(self.matrix_size):
+                print(self.grid.cells[x,y])
                 self.grid.cells[x,y].configure(state = "normal")
+
         self.grid.cells
+
         print(f"Popup Entry content: {input_string}")
