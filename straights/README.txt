@@ -13,10 +13,10 @@ python -m venv venv
 #activate:
 venv\scripts\activate
 
-#install projectBachelor
+#install projectBachelor:
 pip install git+https://github.com/RobinPfau/ProjectBachelor
 
-#run app
+#run app:
 str8ts
 
 ___________________________
@@ -33,3 +33,7 @@ pip install .
 
 #run app
 str8ts
+
+___________________________
+
+should work on different os too
