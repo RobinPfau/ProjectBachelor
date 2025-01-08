@@ -1,6 +1,7 @@
 import math
 import cvc5
 from cvc5 import Kind
+import time
 
 # Class definition for the SMT cvc5 puzzle solver Version2
 class SmtSolver_v2():
@@ -9,6 +10,18 @@ class SmtSolver_v2():
         self.solver = cvc5.Solver()
 
         self.solver.setOption("produce-models", "true")
+        self.solver.setOption("verbosity", "0")
+        self.solver.setOption("stats", "true")
+        #self.solver.setOption("output", "trigger")
+        self.solver.setOption("produce-proofs", "true")
+
+        #solver logic integer difference logic
+        #self.solver.setLogic("QF_IDL")
+        #solver logig linear integer algebra
+        self.solver.setLogic("QF_LIA")
+
+        #schämecke
+        # self.solver.setOption("threads", "4")
         # self.solver.setOption("decision-stategy", "value")
         # self.solver.setOption("time-limit", "10000")
 
@@ -164,21 +177,48 @@ class SmtSolver_v2():
         #print(straight_constraint)
 
 
-    def solve(self, puzzlestring):
+
+    def solve_stepwise(self):
+        self.solver.push()
         # Main method to solve the puzzle
+
+        starttime = time.time()
+
+        self.value_rule()  # Apply value-based rules
+        if self.solver.checkSat().isSat():
+            print(f"Solving value took {time.time() - starttime} seconds.")
+        starttime = time.time()
+        
+        self.consecutive_rule()  # Apply consecutive rules  
+        if self.solver.checkSat().isSat():
+            print(f"Solving consecutive took {time.time() - starttime} seconds.")
+        self.unique_rule()  # Apply uniqueness rules
+        if self.solver.checkSat().isSat():
+            print(f"Solving unique took {time.time() - starttime} seconds.")
+        starttime = time.time()
+
+        self.solver.pop()
+
+
+    def solve(self, puzzlestring):
+       
         
         self.setup(puzzlestring)  # Setup the matrices and initial constraints
+
+        self.solve_stepwise()
+
         self.value_rule()  # Apply value-based rules
         self.unique_rule()  # Apply uniqueness rules
         self.consecutive_rule()  # Apply consecutive rules  
-            
+
         # Check and return the solution
         return self.check_solution()
       
     def check_solution(self):
         # Check satisfiability and extract the solution if one exists
-        
+        starttime = time.time()
         if self.solver.checkSat().isSat():
+            print(f"Solving the puzzle took {time.time() - starttime} seconds.")
             print("Solution found:")
             solution = []
             for x in range(self.matrix_size):
