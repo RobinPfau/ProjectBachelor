@@ -111,6 +111,8 @@ class Controls(ctk.CTkFrame):
 
         self.button_load_creative = ctk.CTkButton(frame, fg_color = "darkgreen", width = 100, text = "LOAD Puzzle" ,command = lambda: self.on_press_load())
 
+        self.options_set_size = ctk.CTkOptionMenu(frame, values =["4 x 4","5 x 6","6 x 6","7 x 7","8 x 8","9 x 9"],  fg_color = "darkgreen",command = self.on_press_set_size)
+        self.options_set_size.set("Choose a Size")
 
        
         frame.pack(expand = False, fill = None, anchor = "s", padx = 10, pady = 10)
@@ -234,13 +236,6 @@ class Controls(ctk.CTkFrame):
                 self.grid.cells[x,y].configure(fg_color = "teal")
         
         return
-        creator = SmtCreator(self.matrix_size)
-       
-        puzzlestring = creator.create_puzzle()
-        print(puzzlestring)
-        puzzlelist = self.converter.convert(puzzlestring)
-        self.grid.delete_grid()
-        self.grid.create_grid(puzzlelist)
         
     # TODO: toggle to not taking in grid
     def on_press_toggle_notes(self):
@@ -253,6 +248,7 @@ class Controls(ctk.CTkFrame):
             self.button_save_creative.grid_forget()
             self.button_solve_creative.grid_forget()
             self.button_load_creative.grid_forget()
+            self.options_set_size.grid_forget()
             
             self.button_creative.configure(fg_color = ['#3a7ebf', '#1f538d'])
             self.options_main.configure(state = "normal")
@@ -271,8 +267,6 @@ class Controls(ctk.CTkFrame):
                     content = rowlist[y]
                     self.grid.cells[x,y].configure(fg_color = content.color, text_color = content.get_text_color(), state = content.get_state())
 
-
-
         else:
             self.load_puzzle(self.converter.convert("0"*162))
             self.matrix_size = 9
@@ -281,6 +275,7 @@ class Controls(ctk.CTkFrame):
             self.button_save_creative.grid(row = 1, column = 1, fill = None, pady = 10, padx =5)
             self.button_solve_creative.grid(row = 0, column = 1, fill = None, pady = 10, padx =5)
             self.button_load_creative.grid(row = 2, column = 0, fill = None, pady = 10, padx =5)
+            self.options_set_size.grid(row = 2, column = 1, fill = None, pady = 10, padx =5)
 
             self.button_creative.configure(fg_color = "darkgreen")
 
@@ -331,6 +326,18 @@ class Controls(ctk.CTkFrame):
             self.grid.save_solution(self.solutions)
 
         self.on_press_solve()
+
+    def on_press_set_size(self, size):
+
+        print(size)
+        
+        new_size = int(size[0])
+        self.matrix_size = new_size
+        self.grid.matrix_size = new_size
+               
+        self.load_puzzle(self.converter.convert("0"*(new_size**2)*2))
+
+
 
     # this is the load interface (maybee export to class)
     def on_press_load(self):
