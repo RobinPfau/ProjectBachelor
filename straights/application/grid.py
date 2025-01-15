@@ -185,10 +185,13 @@ class Grid(ctk.CTkFrame):
             if cell.color == "red":
                 cell.color = "blue"
                 cell.configure(text_color = "blue")
-            solution = self.matrix.grid[x][y].solution
-            self.matrix.update_matrix(x, y, solution)
-            cell.delete(0, "end")
-            cell.insert(0, str(solution))
+            if self.matrix.grid[x][y].solution:
+                solution = self.matrix.grid[x][y].solution
+                self.matrix.update_matrix(x, y, solution)
+                cell.delete(0, "end")
+                cell.insert(0, str(solution))
+            else:
+                print("grid: no solution safed")
 
 
     #swap color of a cell in creative mode

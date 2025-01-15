@@ -4,7 +4,6 @@ from .grid import Grid
 from .controls import Controls
 from .matrix import Matrix
 from .converter import Converter
-from .checker import Solver
 from .image import Picture
 from .puzzles import puzzles
 

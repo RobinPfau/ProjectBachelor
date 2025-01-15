@@ -1,8 +1,7 @@
 import customtkinter as ctk
 from .converter import Converter
-from .smt_v1 import SmtSolver
-from .creator_v2 import SmtCreator
-from .smt_v2 import SmtSolver_v2
+from .creator_v3 import SmtCreator
+from .smt_v3 import SmtSolver_v3
 import random as random
 import math
 
@@ -188,13 +187,13 @@ class Controls(ctk.CTkFrame):
     #solves the selected puzzle
     def solve(self):
 
-        smt_v2 = SmtSolver_v2()
-        solutions = smt_v2.solve(self.puzzlestring)
+        smt_v3 = SmtSolver_v3()
+        solutions = smt_v3.solve(self.puzzlestring)
        
         #smt_v1 = SmtSolver(self.puzzlestring, self.grid.matrix, self.matrix_size)
         #solutions = smt_v1.find_grid()
         if solutions:
-            has_alternate = smt_v2.alternate_solution()
+            has_alternate = smt_v3.alternate_solution()
         return solutions
 
     #loads the solution into the GUI
@@ -226,7 +225,7 @@ class Controls(ctk.CTkFrame):
     # TODO: offer a not yet defined help
     def on_press_help(self):
         
-        solver = SmtSolver_v2()
+        solver = SmtSolver_v3()
         puzzlestring = self.save_string()
         possibilities_list = solver.find_possibilties(puzzlestring)
         
@@ -239,7 +238,15 @@ class Controls(ctk.CTkFrame):
         
     # TODO: toggle to not taking in grid
     def on_press_toggle_notes(self):
-        pass        
+        creator = SmtCreator()     
+        self.puzzlestring = creator.create_puzzle(9)
+        self.load_puzzle(self.converter.convert(self.puzzlestring))
+
+        self.solutions = self.solve()
+        
+        if self.solutions:
+            self.grid.save_solution(self.solutions)
+
       
     #starts the creative mode, disables map selection  
     def on_press_creative_mode(self):
@@ -352,8 +359,6 @@ class Controls(ctk.CTkFrame):
 
             colorstring = entry_text[midpoint:]
 
-            print(math.sqrt(midpoint))
-
             if len(entry_text) in {162, 72, 50, 32, 18, 8} and entry_text.isdigit() and set(colorstring) <= {"0", "1"}:
                 popup.destroy()  # Close the popup after getting the text
                 self.pass_and_load(entry_text)  # Pass the entry text to the callback function
@@ -383,7 +388,7 @@ class Controls(ctk.CTkFrame):
         self.grid.delete_grid()
 
         input_list = self.converter.convert(input_string)
-        print(len(input_list))
+
         self.matrix_size = int(math.sqrt(len(input_list)))
         self.grid.create_grid(input_list)
 
@@ -391,7 +396,7 @@ class Controls(ctk.CTkFrame):
 
         for x in range(self.matrix_size):
             for y in range(self.matrix_size):
-                print(self.grid.cells[x,y])
+
                 self.grid.cells[x,y].configure(state = "normal")
 
         self.grid.cells

@@ -4,7 +4,7 @@ from cvc5 import Kind
 import time
 
 # Class definition for the SMT cvc5 puzzle solver Version2
-class SmtSolver_v2():
+class SmtSolver_v3():
     def __init__(self):
 
         self.solver = cvc5.Solver()
@@ -96,18 +96,20 @@ class SmtSolver_v2():
                
         for x in range(self.matrix_size):
             # Ensure all values in each row are distinct
-            col = [self.value_matrix[x][y] for y in range(self.matrix_size)]
-            unique_col_constraint = self.solver.mkTerm(Kind.DISTINCT, *col)
-            self.solver.assertFormula(unique_col_constraint)
-            #print(unique_col_constraint)
+            col = [self.value_matrix[x][y] for y in range(self.matrix_size) if not(self.find_color(x,y) == 1 and self.find_value(x,y) == 0)]
+            if len(col) > 1:
+                unique_col_constraint = self.solver.mkTerm(Kind.DISTINCT, *col)
+                self.solver.assertFormula(unique_col_constraint)
+                #print(unique_col_constraint)
             
 
         for y in range(self.matrix_size):
             # Ensure all values in each column are distinct
-            row = [self.value_matrix[x][y] for x in range(self.matrix_size)]
-            unique_row_constraint = self.solver.mkTerm(Kind.DISTINCT, *row)
-            self.solver.assertFormula(unique_row_constraint)
-            #print(unique_row_constraint)
+            row = [self.value_matrix[x][y] for x in range(self.matrix_size) if not(self.find_color(x,y) == 1 and self.find_value(x,y) == 0)]
+            if len(row) > 1:
+                unique_row_constraint = self.solver.mkTerm(Kind.DISTINCT, *row)
+                self.solver.assertFormula(unique_row_constraint)
+                #print(unique_row_constraint)
 
 
     def consecutive_rule(self):
@@ -174,7 +176,7 @@ class SmtSolver_v2():
         # Enforce the constraints together
         straight_constraint = self.solver.mkTerm(Kind.AND, *consecutive_constraint)
         self.solver.assertFormula(straight_constraint)
-        #print(straight_constraint)
+        print(straight_constraint)
 
 
     def solve_stepwise(self):
@@ -204,7 +206,7 @@ class SmtSolver_v2():
         
         self.setup(puzzlestring)  # Setup the matrices and initial constraints
 
-        self.solve_stepwise()
+        #self.solve_stepwise()
 
         self.value_rule()  # Apply value-based rules
         self.unique_rule()  # Apply uniqueness rules
@@ -300,7 +302,7 @@ class SmtSolver_v2():
 
         self.solver.pop()
 
-        return alternate, alternate_solution if alternate else None
+        return alternate #alternate_solution if alternate else None
 
 
  #
@@ -494,3 +496,11 @@ class SmtSolver_v2():
                     self.solver.pop()
 
         return possibilities
+
+    def find_value(self, x, y):
+        value = int(self.intstring[x * self.matrix_size + y])
+        return value
+
+    def find_color(self, x, y):
+        black = True if int(self.colorstring[x * self.matrix_size + y]) == 1 else False
+        return black
