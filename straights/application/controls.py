@@ -59,7 +59,7 @@ class Controls(ctk.CTkFrame):
         button_delete = ctk.CTkButton(frame, width = 100, text = "DELETE" ,command=  lambda: self.on_press_delete())
         button_delete.grid(row = 0, column = 0, fill = None, pady = 10, padx =5)
 
-        button_notes = ctk.CTkButton(frame, width = 100, text = "NOTES" ,command=  lambda: self.on_press_toggle_notes())
+        button_notes = ctk.CTkButton(frame, width = 100, text = "GENERATE" ,command=  lambda: self.on_press_toggle_notes())
         button_notes.grid(row = 0, column = 1, fill = None, pady = 10, padx =5)
 
         button_solve = ctk.CTkButton(frame, width = 100, text = "SOLVE" ,command=  lambda: self.on_press_solve())
