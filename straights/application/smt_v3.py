@@ -176,7 +176,7 @@ class SmtSolver_v3():
         # Enforce the constraints together
         straight_constraint = self.solver.mkTerm(Kind.AND, *consecutive_constraint)
         self.solver.assertFormula(straight_constraint)
-        print(straight_constraint)
+        #print(straight_constraint)
 
 
     def solve_stepwise(self):
@@ -232,7 +232,7 @@ class SmtSolver_v3():
                         row.append(cell_value)
                     else:
                         row.append(0)  # Black cells have a value of 0
-                print(row)  # Print the solution row
+                #print(row)  # Print the solution row
                 solution.append(row)
             
             return solution
@@ -378,7 +378,7 @@ class SmtSolver_v3():
 
         if len(straight) > 1:
             self.enforce_consecutive(straight, "row", row)
-            print(f"straight in row {row} of lentgh {len(straight)}")
+            #print(f"straight in row {row} of lentgh {len(straight)}")
 
 
         straight = []
@@ -400,7 +400,7 @@ class SmtSolver_v3():
             
         if len(straight) > 1:
             self.enforce_consecutive(straight, "col", col)
-            print(f"straight in col {col} of lentgh {len(straight)}")
+           #print(f"straight in col {col} of lentgh {len(straight)}")
 
 
     def solve_single(self, puzzlestring, x, y):
