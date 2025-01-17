@@ -7,6 +7,9 @@ https://www.python.org/downloads/
 
 #create folder for project
 
+#in Linux, tkinter needs to be installed:
+sudo apt-get install python3-tk
+
 #(optional)create new Virtual environment in your folder:
 python -m venv venv
 
@@ -18,6 +21,7 @@ pip install git+https://github.com/RobinPfau/ProjectBachelor
 
 #run app:
 str8ts
+
 
 ___________________________
 
