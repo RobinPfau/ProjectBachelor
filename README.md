@@ -41,4 +41,4 @@ str8ts
 
 ___________________________
 
-should work on other os aswell
+created in windows, should work on other os aswell
