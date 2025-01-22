@@ -133,6 +133,10 @@ class Controls(ctk.CTkFrame):
                     focused_cell.configure(text_color = "white")
                 else:
                     focused_cell.configure(text_color = "black")
+            if self.grid.check_puzzle_solution():
+                self.parent.display.update_display("you did it")  
+            else:
+                 self.parent.display.update_display("Welcome to str8ts")    
         else:
             print("no active cell")
          
@@ -152,7 +156,7 @@ class Controls(ctk.CTkFrame):
         self.puzzlestring = random.choice(list(self.keys[selected_main][sub_cat].values()))
         selected_puzzle = self.converter.convert(self.puzzlestring)
         
-        
+        self.parent.display.update_display(f"Selected path: {selected_main}/{sub_cat}")
         print(f"Selected path: {selected_main}/{sub_cat}")
 
         self.load_puzzle(selected_puzzle)
@@ -211,6 +215,7 @@ class Controls(ctk.CTkFrame):
                         cell.delete(0, "end")
                         cell.insert(0, str(value))
                         cell.configure(text_color = "blue")
+            self.parent.display.update_display("solution correct")
         else: 
             print("error solution none")     
 
@@ -233,12 +238,14 @@ class Controls(ctk.CTkFrame):
            if len(possibilities) == 1:
                 print(f"one solution in ({x}, {y})")
                 self.grid.cells[x,y].configure(fg_color = "teal")
-        
+        self.parent.display.update_display("Try marked cells")
         return
         
     # TODO: toggle to not taking in grid
     def on_press_toggle_notes(self):
-        creator = SmtCreator()     
+
+        self.parent.display.update_display("creating a puzzle")    
+        creator = SmtCreator(self.parent)
         self.puzzlestring = creator.create_puzzle(9)
         self.load_puzzle(self.converter.convert(self.puzzlestring))
 
@@ -246,6 +253,8 @@ class Controls(ctk.CTkFrame):
         
         if self.solutions:
             self.grid.save_solution(self.solutions)
+
+        self.parent.display.update_display("unique puzzle created")
 
       
     #starts the creative mode, disables map selection  
@@ -364,6 +373,7 @@ class Controls(ctk.CTkFrame):
                 self.pass_and_load(entry_text)  # Pass the entry text to the callback function
                 
             else:
+                self.parent.display.update_display("invalid entry")
                 print("wrong length or not number")
             
         # Add widgets to the popup

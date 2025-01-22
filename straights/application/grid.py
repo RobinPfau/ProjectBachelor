@@ -11,7 +11,7 @@ class Grid(ctk.CTkFrame):
         #setup frame
         super().__init__(parent, **kwargs)
         self.place(relx = x, rely= y, relwidth = rwidth, relheight = rheight)
-
+        self.parent = parent
         self.selected_cell = None
         self.matrix = None
         self.cells = {}         # Store (row, col) -> Cell mappings
@@ -132,6 +132,12 @@ class Grid(ctk.CTkFrame):
 
             elif current_value in "123456789":
                 cell.insert(0, current_value)
+        
+        if self.check_puzzle_solution():
+           self.parent.display.update_display("you're a winner")    
+        else: 
+            self.parent.display.update_display("welcome to str8ts")    
+       
 
     #button function that deletes value in highlighted cell
     def on_delete(self, event):
@@ -219,3 +225,14 @@ class Grid(ctk.CTkFrame):
     # utility function that validates input as integer
     def validate_number(self, text):
         return text == "" or text.isdigit()
+    
+    def check_puzzle_solution(self):
+        
+        for x in range(self.matrix_size):
+            for y in range(self.matrix_size):
+                cell = self.matrix.grid[x][y]
+                if cell.solution is not None and cell.value != cell.solution:
+                    return False
+        return True
+    
+    

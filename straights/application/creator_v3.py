@@ -3,7 +3,8 @@ import math
 from .smt_v3 import SmtSolver_v3
 
 class SmtCreator():
-    def __init__(self):
+    def __init__(self, parent):
+        self.parent = parent
         self.solver = SmtSolver_v3()
         self.intstring = "000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 
@@ -12,11 +13,12 @@ class SmtCreator():
         """
         Creates a new puzzleboard
         """
+
         ones = "1" * 11
         os = "0" * 29
         stringlist = list(ones + os)
         random.shuffle(stringlist)
-
+        #creates symmetric board
         colorstring_one = "".join(stringlist)
         colorstring_two = colorstring_one[::-1]
         colorstring = colorstring_one  + "0" + colorstring_two
@@ -26,12 +28,18 @@ class SmtCreator():
         return colorstring
 
     def create_puzzle(self, size):
-
+        
         self.colorstring = self.create_seed(size)
         self.matrix_size = math.sqrt(len(self.colorstring))
         puzzlestring = self.intstring + self.colorstring
+       
         print(puzzlestring)
         print("creating a puzzle")
+       
+        
+
+        #for filler in range(4):
+        #    intlist = list(self.)
 
         solutions = self.solver.solve(puzzlestring)
         self.save_solution(solutions)
@@ -82,7 +90,3 @@ class SmtCreator():
         stringlist[index] = "0"
 
         self.intstring = "".join(stringlist)
-
-
-
-
