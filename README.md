@@ -1,11 +1,15 @@
-WINDOWS:
-
+### Install Guide
 #Install Python version <=3.12 and add to path:
 https://www.python.org/downloads/
 
 #Install Git https://github.com/git-for-windows/git/releases/download/v2.47.1.windows.1/Git-2.47.1-64-bit.exe
 
+#in Linux, tkinter needs to be installed:
+sudo apt-get install python3-tk
+
 #create folder for project
+
+
 
 #(optional)create new Virtual environment in your folder:
 python -m venv venv
@@ -18,6 +22,7 @@ pip install git+https://github.com/RobinPfau/ProjectBachelor
 
 #run app:
 str8ts
+
 
 ___________________________
 
@@ -36,4 +41,4 @@ str8ts
 
 ___________________________
 
-should work on other os aswell
+created in windows, should work on other os aswell
