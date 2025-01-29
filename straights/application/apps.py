@@ -37,7 +37,7 @@ class App (ctk.CTk):
         #create GUI
         self.grid = Grid(parent = self, x = 0, y = 0, rwidth = 0.65, rheight = 1, puzzlelist = puzzlelist)
         self.controls = Controls(self, 0.675, 0, "black", 0.3, 1, self.grid, self.puzzles)
-        self.display = Display(self, "Welcome the Str8ts",  0.675, 0.9, 0.3, 0.05)
+        self.display = Display(self, "Welcome to Str8ts",  0.675, 0.9, 0.3, 0.05)
         self.image = None #Picture(self, 700, 700)
 
         #run

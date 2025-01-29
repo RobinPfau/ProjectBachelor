@@ -134,9 +134,9 @@ class Grid(ctk.CTkFrame):
                 cell.insert(0, current_value)
         
         if self.check_puzzle_solution():
-           self.parent.display.update_display("you're a winner")    
+           self.parent.display.update_display("You're a winner!")    
         else: 
-            self.parent.display.update_display("welcome to str8ts")    
+            self.parent.display.update_display("Welcome to str8ts")    
        
 
     #button function that deletes value in highlighted cell

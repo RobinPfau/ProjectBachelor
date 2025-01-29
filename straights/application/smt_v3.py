@@ -12,8 +12,11 @@ class SmtSolver_v3():
         self.solver.setOption("produce-models", "true")
         self.solver.setOption("verbosity", "0")
         self.solver.setOption("stats", "true")
+        #self.solver.setOption("stats-every-query", "true")
+        self.solver.setOption("output", "portfolio")
         #self.solver.setOption("output", "trigger")
         self.solver.setOption("produce-proofs", "true")
+        self.solver.getStatistics()
 
         #solver logic integer difference logic
         #self.solver.setLogic("QF_IDL")
@@ -202,8 +205,8 @@ class SmtSolver_v3():
 
 
     def solve(self, puzzlestring):
-       
-        
+        print(puzzlestring)
+        self.solver.resetAssertions()
         self.setup(puzzlestring)  # Setup the matrices and initial constraints
 
         #self.solve_stepwise()
@@ -402,7 +405,7 @@ class SmtSolver_v3():
             self.enforce_consecutive(straight, "col", col)
            #print(f"straight in col {col} of lentgh {len(straight)}")
 
-
+    #relic from creatorv2
     def solve_single(self, puzzlestring, x, y):
 
         self.setup(puzzlestring)
@@ -449,7 +452,7 @@ class SmtSolver_v3():
                 if possible_values:
                     possibilities[(x, y)] = possible_values
 
-
+    #functionality for the Helpbutton
     def find_possibilties(self, temp_puzzlestring):
         #setup for solver
         self.setup(temp_puzzlestring)
@@ -497,10 +500,12 @@ class SmtSolver_v3():
 
         return possibilities
 
-    def find_value(self, x, y):
+    def find_value(self, x:int, y:int) -> int:
         value = int(self.intstring[x * self.matrix_size + y])
         return value
 
-    def find_color(self, x, y):
+    def find_color(self, x: int, y:int) -> bool:
         black = True if int(self.colorstring[x * self.matrix_size + y]) == 1 else False
         return black
+    
+

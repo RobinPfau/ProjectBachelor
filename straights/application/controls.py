@@ -86,7 +86,7 @@ class Controls(ctk.CTkFrame):
         self.options_main.pack()
       
         self.options_sub = ctk.CTkOptionMenu(self, values = ["Choose Category First"], command = self.on_press_subselect)
-        self.options_sub.set("Coose Difficulty")
+        self.options_sub.set("Choose Difficulty")
         self.options_sub.pack()
         self.options_sub.configure(state = "disabled")
 
@@ -134,7 +134,7 @@ class Controls(ctk.CTkFrame):
                 else:
                     focused_cell.configure(text_color = "black")
             if self.grid.check_puzzle_solution():
-                self.parent.display.update_display("you did it")  
+                self.parent.display.update_display("You did it!")  
             else:
                  self.parent.display.update_display("Welcome to str8ts")    
         else:
@@ -156,7 +156,7 @@ class Controls(ctk.CTkFrame):
         self.puzzlestring = random.choice(list(self.keys[selected_main][sub_cat].values()))
         selected_puzzle = self.converter.convert(self.puzzlestring)
         
-        self.parent.display.update_display(f"Selected path: {selected_main}/{sub_cat}")
+        self.parent.display.update_display(f"{selected_main}/{sub_cat}")
         print(f"Selected path: {selected_main}/{sub_cat}")
 
         self.load_puzzle(selected_puzzle)
@@ -215,6 +215,8 @@ class Controls(ctk.CTkFrame):
                         cell.delete(0, "end")
                         cell.insert(0, str(value))
                         cell.configure(text_color = "blue")
+                        if cell.cget("fg_color") == "teal":
+                            cell.configure(fg_color= "white")
             self.parent.display.update_display("solution correct")
         else: 
             print("error solution none")     
@@ -246,15 +248,16 @@ class Controls(ctk.CTkFrame):
 
         self.parent.display.update_display("creating a puzzle")    
         creator = SmtCreator(self.parent)
-        self.puzzlestring = creator.create_puzzle(9)
-        self.load_puzzle(self.converter.convert(self.puzzlestring))
+        self.puzzlestring = creator.create_puzzle(9, "asymmetric", "medium")
+        if self.puzzlestring != "0"*162:
+            self.load_puzzle(self.converter.convert(self.puzzlestring))
 
-        self.solutions = self.solve()
+            self.solutions = self.solve()
         
         if self.solutions:
             self.grid.save_solution(self.solutions)
 
-        self.parent.display.update_display("unique puzzle created")
+        
 
       
     #starts the creative mode, disables map selection  

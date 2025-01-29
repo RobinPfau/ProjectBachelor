@@ -32,7 +32,7 @@ class Matrix():
     def update_matrix(self, x, y, n):
         self.grid[x][y].value = n
         
-    #finds all groupings and saves them in a list
+    #finds all groupings and saves them in a list : RELIC
     def find_straights(self):
         straights = []     
         for row in range(self.matrix_size):
