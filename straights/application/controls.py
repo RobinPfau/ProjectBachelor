@@ -258,7 +258,7 @@ class Controls(ctk.CTkFrame):
             self.grid.save_solution(self.solutions)
 
         
-
+    
       
     #starts the creative mode, disables map selection  
     def on_press_creative_mode(self):
@@ -275,7 +275,7 @@ class Controls(ctk.CTkFrame):
             self.puzzlestring = self.save_string()
 
             self.grid.creative_mode = False
-            if self.puzzlestring:
+            if self.puzzlestring and self.puzzlestring != "0"*162:
                 self.solutions = self.solve()
             if self.solutions:
                 self.grid.save_solution(self.solutions)
