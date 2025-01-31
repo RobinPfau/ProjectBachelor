@@ -3,7 +3,7 @@ import cvc5
 from cvc5 import Kind
 import time
 
-# Class definition for the SMT cvc5 puzzle solver Version2
+# Class definition for the SMT cvc5 puzzle solver Version3
 class SmtSolver_v3():
     def __init__(self):
 
@@ -57,8 +57,8 @@ class SmtSolver_v3():
         for x in range(self.matrix_size):
             for y in range(self.matrix_size):
                 # Get the value and color of the current cell from the input
-                value = int(self.intstring[x * self.matrix_size + y])
-                black = True if int(self.colorstring[x * self.matrix_size + y]) == 1 else False
+                value = self.find_value( x, y)
+                black = self.find_color(x, y)
 
                 # Constraint for the color of the cell
                 color_constraint = self.solver.mkTerm(Kind.EQUAL,
@@ -124,7 +124,7 @@ class SmtSolver_v3():
 
             for y in range(self.matrix_size):
                 # Check if the cell is black or white
-                black = True if int(self.colorstring[x * self.matrix_size + y]) == 1 else False
+                black = self.find_color(x,y)
 
                 if not black:  # White cell, add to the current sequence
                     straight.append(self.value_matrix[x][y])
@@ -142,7 +142,7 @@ class SmtSolver_v3():
 
             for x in range(self.matrix_size):
                 # Check if the cell is black or white
-                black = True if int(self.colorstring[x * self.matrix_size + y]) == 1 else False
+                black = self.find_color(x,y)
 
                 if not black:  # White cell, add to the current sequence
                     straight.append(self.value_matrix[x][y])
@@ -249,23 +249,23 @@ class SmtSolver_v3():
         if not self.solver.checkSat().isSat():
             print("no solution in the first place when checking for multiple")
             return False, None
-        
+        #collect the current solution
         current_solution = []
         for x in range(self.matrix_size):
             row = []
             for y in range(self.matrix_size):
-            
+            #get the integer value of each cell in the current solution
                 value = self.solver.getValue(self.value_matrix[x][y]).getIntegerValue()
                 row.append(value)
             current_solution.append(row)
-
+        #assign different constraints to all cells 
         different_constraints = []
         for x in range(self.matrix_size):
             for y in range(self.matrix_size):
                 current_value = current_solution[x][y] 
                 if current_value < 0:
                     continue
-
+                
                 different_constraint = self.solver.mkTerm(
                                                         Kind.DISTINCT,
                                                         self.value_matrix[x][y],
@@ -311,25 +311,26 @@ class SmtSolver_v3():
  #
  #___________________________ single rules _________________________________  
  # 
-    
+    # assign unique rule to a single cell
     def unique_single_rule(self,row,col):
-  
+        #unique in row
         row_list = [self.value_matrix[row][y] for y in range(self.matrix_size)]
         unique_row_constraint = self.solver.mkTerm(Kind.DISTINCT, *row_list)
         self.solver.assertFormula(unique_row_constraint)
         #print(unique_row_constraint)
 
+        #unique in column
         column_list = [self.value_matrix[x][col] for x in range(self.matrix_size)]
         unique_col_constraint = self.solver.mkTerm(Kind.DISTINCT, *column_list)
         self.solver.assertFormula(unique_col_constraint)
         #print(unique_col_constraint)
 
-
+    #assign consecutive rule to a single cell
     def consecutive_single_rule(self, row, col):
         #black cell -> no straights
         if int(self.colorstring[row * self.matrix_size + col]) == 1:
             return
-        
+        #find straight with cell in column
         straight = []    
         for y in range(self.matrix_size):   
             black = True if int(self.colorstring[row * self.matrix_size + y]) == 1 else False
@@ -344,8 +345,8 @@ class SmtSolver_v3():
             self.enforce_consecutive(straight, "row", row)
             straight = []
 
+        #find straight with cell in row
         straight = []  
-
         for x in range(self.matrix_size):        
             black = True if int(self.colorstring[x * self.matrix_size + col]) == 1 else False
 
@@ -423,18 +424,19 @@ class SmtSolver_v3():
         else:
             print("no cell value possible")
 
-
+    #functionality for the helpbutton v2
+    #find all possible values for all cells
     def find_next_cells(self, puzzlestring):
 
         possibilities = {}
 
-        self.setup(puzzlestring)
-        self.value_rule()
+        self.setup(puzzlestring) #setup solver
+        self.value_rule()       #fill matrix
 
         for x in range(self.matrix_size):
             for y in range(self.matrix_size):
                 possible_values = []
-
+                #check all legal values for cell
                 for value in range (1,self.matrix_size):
                     temp_constraint = self.solver.mkTerm(
                         Kind.EQUAL,
@@ -464,8 +466,8 @@ class SmtSolver_v3():
         for x in range(self.matrix_size):
             for y in range(self.matrix_size):
 
-                value = int(self.intstring[x * self.matrix_size + y])
-                black = True if int(self.colorstring[x * self.matrix_size + y]) == 1 else False
+                value = self.find_value(x,y)
+                black = self.find_color(x,y)
                 
                 if not value and not black:
 
@@ -475,7 +477,7 @@ class SmtSolver_v3():
 
                     cell = self.value_matrix[x][y]
                     possible_values = []
-
+                    #try all possible values for cell
                     for candidate in range (1, self.matrix_size + 1):
                         self.solver.push()
 
@@ -488,7 +490,7 @@ class SmtSolver_v3():
                             possible_values.append(candidate)
 
                         self.solver.pop()
-
+                    #return list of possible values
                     if possible_values: 
                         possibilities[(x,y)] = possible_values
                         print("List of Possibilities in ",x , y," : ", possible_values)
@@ -497,13 +499,15 @@ class SmtSolver_v3():
                         print("no help for", x, y)
                     
                     self.solver.pop()
-
+        #return all legal values for all cells
         return possibilities
 
+    #help function for the value
     def find_value(self, x:int, y:int) -> int:
         value = int(self.intstring[x * self.matrix_size + y])
         return value
 
+    #help function for the color
     def find_color(self, x: int, y:int) -> bool:
         black = True if int(self.colorstring[x * self.matrix_size + y]) == 1 else False
         return black
