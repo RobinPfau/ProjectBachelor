@@ -29,10 +29,11 @@ class Grid(ctk.CTkFrame):
     def delete_grid(self):
         self.frame.destroy()
 
+    # creates the grid with the given puzzle
     def create_grid(self, puzzlelist):
         self.cells.clear()
         self.matrix_size = int(math.sqrt(len(puzzlelist)))
-
+        #  Create a matrix object for the puzzle values
         self.matrix = Matrix(puzzlelist)
         #puzzle frame
         self.frame = ctk.CTkFrame(self)
@@ -61,6 +62,8 @@ class Grid(ctk.CTkFrame):
                 cell.configure(validate = "key", validatecommand = (self.vaidate_command, "%P"))
                 
                 #cell.frame = border_frame
+
+                # set the cell value
                 content = rowlist[col]
                 if content.value != 0:
                     cell.insert(0, content.value)
@@ -71,8 +74,8 @@ class Grid(ctk.CTkFrame):
                 else:
                     cell.locked = True
                 self.cells[row,col] = cell
-                #cell.grid(padx = 1,pady = 1)
                 
+                # add the cell to the grid
                 cell.grid(row = row, column = col, fill = None, padx = 1, pady = 1) 
                 
   
@@ -169,7 +172,7 @@ class Grid(ctk.CTkFrame):
                 if solution > 0:
                     self.matrix.grid[x][y].solution = solution
 
-    # TODO: checks if solution and value in Grid are the same
+    # checks if solution and value in Grid are the same
     def check_cell_solution(self):
     
         for x in range(self.matrix_size):

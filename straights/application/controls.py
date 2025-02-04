@@ -22,7 +22,9 @@ class Controls(ctk.CTkFrame):
 
         self.create_numpad(colour)
         self.create_control_buttons()
-        self.create_loading()
+        #self.create_loading()
+        #self.create_generate()
+        self.create_select()
         self.create_creative_buttons()
                 
     #creates the numpad
@@ -80,15 +82,39 @@ class Controls(ctk.CTkFrame):
         #button_test.pack(padx = 10, pady= 10)
 
     #creates the menues used for loading puzzles
-    def create_loading(self):
-        self.options_main = ctk.CTkOptionMenu(self, values = list(self.keys.keys()), command = self.on_press_select)
-        self.options_main.set("Choose Category")
-        self.options_main.pack()
+
+    def create_select(self):
+     
+        frame = ctk.CTkFrame(self)
+        for row in range(2):
+             for col in range(2):
+                frame.grid_rowconfigure(row, weight=1)
+                frame.grid_columnconfigure(col, weight=1)
+
+
+        self.options_main = ctk.CTkOptionMenu(frame, values = list(self.keys.keys()), command = self.on_press_select)
+        self.options_main.grid(row = 0, column = 0, fill = None, pady = 1, padx =5)
+        self.options_main.set("CHOOSE PUZZLE")
+        #self.options_main.pack()
       
-        self.options_sub = ctk.CTkOptionMenu(self, values = ["Choose Category First"], command = self.on_press_subselect)
-        self.options_sub.set("Choose Difficulty")
-        self.options_sub.pack()
+        self.options_sub = ctk.CTkOptionMenu(frame, values = ["Choose Puzzle"], command = self.on_press_subselect)
+        self.options_sub.grid(row = 1, column = 0, fill = None, pady = 1, padx =5)
+        #self.options_sub.pack()
         self.options_sub.configure(state = "disabled")
+
+        self.generate_main = ctk.CTkOptionMenu(frame, values =["symmetric", "asymmetric"], command = self.on_press_generate)
+        self.generate_main.grid(row = 0, column = 1, fill = None, pady = 1, padx =5)
+        self.generate_main.set("GENERATOR")
+        #self.generate_main.pack()
+
+        self.generate_sub = ctk.CTkOptionMenu(frame, values = ["Generate Puzzle"], command = self.on_press_subgenerate)
+        self.generate_sub.grid(row = 1, column = 1, fill = None, pady = 1, padx =5)
+        #self.generate_sub.pack()
+        self.generate_sub.configure(state = "disabled")
+
+
+        frame.pack(expand = False, fill = None, anchor = "center", padx = 5, pady = 5)
+
 
     # creates creative mode interface
     def create_creative_buttons(self):
@@ -165,7 +191,31 @@ class Controls(ctk.CTkFrame):
         
         if self.solutions:
             self.grid.save_solution(self.solutions)
-    
+
+    #
+    def on_press_generate(self, main_cat):
+        
+        self.generate_sub.configure(values=["easy", "medium", "hard", "impossible"])
+        self.generate_sub.set("Select a Difficulty")
+        self.generate_sub.configure(state = "normal")
+        self.generator_type = main_cat
+
+    def on_press_subgenerate(self , sub_cats):
+        
+        self.parent.display.update_display("creating a puzzle")    
+        creator = SmtCreator(self.parent)
+        self.generator_difficulty = sub_cats
+        self.puzzlestring = creator.create_puzzle(9, self.generator_type, self.generator_difficulty)
+        if self.puzzlestring != "0"*162:
+
+            self.load_puzzle(self.converter.convert(self.puzzlestring))
+            self.solutions = self.solve()       
+        if self.solutions:
+            self.grid.save_solution(self.solutions)
+
+        
+
+
     #loads a new grid with provided puzzle and attempts to find a solution
     def load_puzzle(self, selected_puzzle):
         if self.parent.image:
@@ -175,6 +225,9 @@ class Controls(ctk.CTkFrame):
         self.grid.create_grid(selected_puzzle)
 
         self.matrix_size = int(math.sqrt(len(selected_puzzle)))
+
+
+
 
     #button that clears the selected cell
     def on_press_delete(self):
@@ -198,6 +251,8 @@ class Controls(ctk.CTkFrame):
         #solutions = smt_v1.find_grid()
         if solutions:
             has_alternate = smt_v3.alternate_solution()
+            if has_alternate:
+                self.parent.display.update_display("solved with alternate")
         return solutions
 
     #loads the solution into the GUI
@@ -245,19 +300,7 @@ class Controls(ctk.CTkFrame):
         
     # TODO: toggle to not taking in grid
     def on_press_toggle_notes(self):
-
-        self.parent.display.update_display("creating a puzzle")    
-        creator = SmtCreator(self.parent)
-        self.puzzlestring = creator.create_puzzle(9, "asymmetric", "medium")
-        if self.puzzlestring != "0"*162:
-            self.load_puzzle(self.converter.convert(self.puzzlestring))
-
-            self.solutions = self.solve()
-        
-        if self.solutions:
-            self.grid.save_solution(self.solutions)
-
-        
+        pass
     
       
     #starts the creative mode, disables map selection  
