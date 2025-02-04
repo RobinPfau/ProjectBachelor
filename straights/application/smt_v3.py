@@ -10,11 +10,11 @@ class SmtSolver_v3():
         self.solver = cvc5.Solver()
 
         self.solver.setOption("produce-models", "true")
-        self.solver.setOption("verbosity", "0")
+        self.solver.setOption("verbosity", "1")
         self.solver.setOption("stats", "true")
         #self.solver.setOption("stats-every-query", "true")
-        self.solver.setOption("output", "portfolio")
-        #self.solver.setOption("output", "trigger")
+        #self.solver.setOption("output", "portfolio")
+        self.solver.setOption("output", "trigger")
         self.solver.setOption("produce-proofs", "true")
         self.solver.getStatistics()
 
@@ -180,7 +180,6 @@ class SmtSolver_v3():
         straight_constraint = self.solver.mkTerm(Kind.AND, *consecutive_constraint)
         self.solver.assertFormula(straight_constraint)
         #print(straight_constraint)
-
 
     def solve_stepwise(self):
         self.solver.push()
