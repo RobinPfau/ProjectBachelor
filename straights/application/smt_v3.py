@@ -10,7 +10,7 @@ class SmtSolver_v3():
         self.solver = cvc5.Solver()
 
         self.solver.setOption("produce-models", "true")
-        self.solver.setOption("verbosity", "1")
+        self.solver.setOption("verbosity", "0")
         self.solver.setOption("stats", "true")
         #self.solver.setOption("stats-every-query", "true")
         #self.solver.setOption("output", "portfolio")
@@ -51,6 +51,9 @@ class SmtSolver_v3():
                                 for x in range(self.matrix_size)]
                                 for y in range(self.matrix_size)]
              
+ #
+ #___________________________ solver rules _________________________________  
+ # 
 
     def value_rule(self):
         # Define constraints based on puzzle rules for value and color
@@ -61,9 +64,10 @@ class SmtSolver_v3():
                 black = self.find_color(x, y)
 
                 # Constraint for the color of the cell
-                color_constraint = self.solver.mkTerm(Kind.EQUAL,
-                                                      self.color_matrix[x][y],  
-                                                      self.solver.mkBoolean(black))
+                color_constraint = self.solver.mkTerm(
+                    Kind.EQUAL,
+                        self.color_matrix[x][y],  
+                        self.solver.mkBoolean(black))
                 self.solver.assertFormula(color_constraint)
                
 
@@ -71,25 +75,26 @@ class SmtSolver_v3():
                 if value != 0:  # If a fixed value is provided
                     value_constraint = self.solver.mkTerm(
                         Kind.EQUAL, 
-                        self.value_matrix[x][y],  
-                        self.solver.mkInteger(value))
+                            self.value_matrix[x][y],  
+                            self.solver.mkInteger(value))
                 
                 elif black:  # If the cell is black, its value is set to < 0 (ignored)
                     value_constraint = self.solver.mkTerm(
                         Kind.LEQ,
-                        self.value_matrix[x][y],
-                        self.solver.mkInteger(-1))
+                            self.value_matrix[x][y],
+                            self.solver.mkInteger(-1))
                     
                 else:  # If the cell is white, its value must be in the valid range
-                    value_constraint = (self.solver.mkTerm(Kind.AND, 
-                                                                self.solver.mkTerm(
-                                                                    Kind.GEQ,
-                                                                    self.value_matrix[x][y],
-                                                                    self.solver.mkInteger(1)),
-                                                                self.solver.mkTerm(
-                                                                    Kind.LEQ,
-                                                                    self.value_matrix[x][y],
-                                                                    self.solver.mkInteger(self.matrix_size))))
+                    value_constraint = (self.solver.mkTerm(
+                        Kind.AND, 
+                            self.solver.mkTerm(
+                                Kind.GEQ,
+                                    self.value_matrix[x][y],
+                                    self.solver.mkInteger(1)),
+                            self.solver.mkTerm(
+                                Kind.LEQ,
+                                    self.value_matrix[x][y],
+                                    self.solver.mkInteger(self.matrix_size))))
                 # Add the value constraint to the list of constraints
                 self.solver.assertFormula(value_constraint)
                 #print(value_constraint, color_constraint)
@@ -169,15 +174,17 @@ class SmtSolver_v3():
         # Constraint to enforce the range of values
         range_constraint = self.solver.mkTerm(
             Kind.EQUAL,
-            self.solver.mkTerm(Kind.SUB, max_value, min_value), 
-            self.solver.mkInteger(len(straight) - 1)
+                self.solver.mkTerm(Kind.SUB, max_value, min_value), 
+                self.solver.mkInteger(len(straight) - 1)
         )
         
         # Combine all constraints for the sequence
         consecutive_constraint = min_constraint + max_constraint + [range_constraint]
 
         # Enforce the constraints together
-        straight_constraint = self.solver.mkTerm(Kind.AND, *consecutive_constraint)
+        straight_constraint = self.solver.mkTerm(
+            Kind.AND,
+                *consecutive_constraint)
         self.solver.assertFormula(straight_constraint)
         #print(straight_constraint)
 
