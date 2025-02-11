@@ -61,20 +61,24 @@ class Controls(ctk.CTkFrame):
         button_delete = ctk.CTkButton(frame, width = 100, text = "DELETE" ,command=  lambda: self.on_press_delete())
         button_delete.grid(row = 0, column = 0, fill = None, pady = 10, padx =5)
 
-        button_notes = ctk.CTkButton(frame, width = 100, text = "GENERATE" ,command=  lambda: self.on_press_toggle_notes())
-        button_notes.grid(row = 0, column = 1, fill = None, pady = 10, padx =5)
+        #button_notes = ctk.CTkButton(frame, width = 100, text = "GENERATE" ,command=  lambda: self.on_press_toggle_notes())
+        #button_notes.grid(row = 0, column = 1, fill = None, pady = 10, padx =5)
 
-        button_solve = ctk.CTkButton(frame, width = 100, text = "SOLVE" ,command=  lambda: self.on_press_solve())
-        button_solve.grid(row = 1, column = 0, fill = None, pady = 10, padx =5)
+        self.button_solve = ctk.CTkButton(frame, width = 100, text = "SOLVE" ,command=  lambda: self.on_press_solve())
+        self.button_solve.grid(row = 0, column = 1, fill = None, pady = 10, padx =5)
 
-        button_check = ctk.CTkButton(frame, width = 100, text = "CHECK" ,command=  lambda: self.on_press_check())
-        button_check.grid(row = 1, column = 1, fill = None, pady = 10, padx =5)
+        self.button_check = ctk.CTkButton(frame, width = 100, text = "CHECK" ,command=  lambda: self.on_press_check())
+        self.button_check.grid(row = 1, column = 1, fill = None, pady = 10, padx =5)
 
-        button_reveal = ctk.CTkButton(frame, width = 100, text = "REVEAL" ,command=  lambda: self.on_press_reveal())
-        button_reveal.grid(row = 2, column = 0, fill = None, pady = 10, padx =5)
+        self.button_reveal = ctk.CTkButton(frame, width = 100, text = "REVEAL" ,command=  lambda: self.on_press_reveal())
+        self.button_reveal.grid(row = 1, column = 0, fill = None, pady = 10, padx =5)
         #creates the help button
-        button_help = ctk.CTkButton(frame, width = 100, text = "HELP" ,command=  lambda: self.on_press_help())
-        button_help.grid(row = 2, column = 1, fill = None, pady = 10, padx =5)
+        self.button_help = ctk.CTkButton(frame, width = 100, text = "HELP" ,command=  lambda: self.on_press_help())
+        self.button_help.grid(row = 2, column = 0, fill = None, pady = 10, padx =5)
+
+        self.button_help = ctk.CTkButton(frame, width = 100, text = "RESTART" ,command=  lambda: self.on_press_restart())
+        self.button_help.grid(row = 2, column = 1, fill = None, pady = 10, padx =5)
+
 
         frame.pack(expand = False, fill = None, anchor = "center", padx = 10, pady = 10)
         
@@ -94,7 +98,7 @@ class Controls(ctk.CTkFrame):
 
         self.options_main = ctk.CTkOptionMenu(frame, values = list(self.keys.keys()), command = self.on_press_select)
         self.options_main.grid(row = 0, column = 0, fill = None, pady = 1, padx =5)
-        self.options_main.set("CHOOSE PUZZLE")
+        self.options_main.set("Choose Puzzle")
         #self.options_main.pack()
       
         self.options_sub = ctk.CTkOptionMenu(frame, values = ["Choose Puzzle"], command = self.on_press_subselect)
@@ -128,7 +132,7 @@ class Controls(ctk.CTkFrame):
         self.button_creative = ctk.CTkButton(frame, width = 100, text = "CREATIVE MODE" ,command=  lambda: self.on_press_creative_mode())
         self.button_creative.grid(row = 0, column = 0, fill = None, pady = 10, padx =5)
         
-        self.button_swap_color = ctk.CTkButton(frame, fg_color = "darkgreen", width = 100, text = "SWAP COLOR" ,command = lambda: self.on_press_swap_color())
+        self.button_swap_color = ctk.CTkButton(frame, fg_color = "darkgreen", width = 100, text = "SWAP Color" ,command = lambda: self.on_press_swap_color())
         
         self.button_save_creative = ctk.CTkButton(frame, fg_color = "darkgreen", width = 100, text = "EXPORT Puzzle" ,command = lambda: self.on_press_save())
 
@@ -137,7 +141,7 @@ class Controls(ctk.CTkFrame):
         self.button_load_creative = ctk.CTkButton(frame, fg_color = "darkgreen", width = 100, text = "LOAD Puzzle" ,command = lambda: self.on_press_load())
 
         self.options_set_size = ctk.CTkOptionMenu(frame, values =["4 x 4","5 x 6","6 x 6","7 x 7","8 x 8","9 x 9"],  fg_color = "darkgreen",command = self.on_press_set_size)
-        self.options_set_size.set("Choose a Size")
+        self.options_set_size.set("Choose new Size")
 
        
         frame.pack(expand = False, fill = None, anchor = "s", padx = 10, pady = 10)
@@ -183,7 +187,7 @@ class Controls(ctk.CTkFrame):
         selected_puzzle = self.converter.convert(self.puzzlestring)
         
         self.parent.display.update_display(f"{selected_main}/{sub_cat}")
-        print(f"Selected path: {selected_main}/{sub_cat}")
+        print(f"Selected: {selected_main}/{sub_cat}")
 
         self.load_puzzle(selected_puzzle)
 
@@ -225,8 +229,6 @@ class Controls(ctk.CTkFrame):
         self.grid.create_grid(selected_puzzle)
 
         self.matrix_size = int(math.sqrt(len(selected_puzzle)))
-
-
 
 
     #button that clears the selected cell
@@ -297,11 +299,14 @@ class Controls(ctk.CTkFrame):
                 self.grid.cells[x,y].configure(fg_color = "teal")
         self.parent.display.update_display("Try marked cells")
         return
-        
-    # TODO: toggle to not taking in grid
-    def on_press_toggle_notes(self):
-        pass
     
+
+    #restarts the current puzzle
+    def on_press_restart(self):
+        self.load_puzzle(self.converter.convert(self.puzzlestring))
+        self.solutions = self.solve()
+        if self.solutions:
+            self.grid.save_solution(self.solutions)
       
     #starts the creative mode, disables map selection  
     def on_press_creative_mode(self):
@@ -311,6 +316,8 @@ class Controls(ctk.CTkFrame):
             self.button_solve_creative.grid_forget()
             self.button_load_creative.grid_forget()
             self.options_set_size.grid_forget()
+
+            self.button_solve.configure(state = "normal")
             
             self.button_creative.configure(fg_color = ['#3a7ebf', '#1f538d'])
             self.options_main.configure(state = "normal")
@@ -339,6 +346,7 @@ class Controls(ctk.CTkFrame):
             self.button_load_creative.grid(row = 2, column = 0, fill = None, pady = 10, padx =5)
             self.options_set_size.grid(row = 2, column = 1, fill = None, pady = 10, padx =5)
 
+            self.button_solve.configure(state = "disabled")
             self.button_creative.configure(fg_color = "darkgreen")
 
             self.grid.creative_mode = True
@@ -399,6 +407,7 @@ class Controls(ctk.CTkFrame):
                
         self.load_puzzle(self.converter.convert("0"*(new_size**2)*2))
 
+        self.options_set_size.set("Choose new Size")
 
 
     # this is the load interface (maybee export to class)
