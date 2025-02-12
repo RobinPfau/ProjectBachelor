@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='straights',  # Replace with your project name
-    version='0.6.0',    # Project version
+    version='0.7.0',    # Project version
     packages=find_packages(),  # Automatically find packages in your project
     include_package_data=True, # Include non-code files specified in MANIFEST.in
     install_requires=[
