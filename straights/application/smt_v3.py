@@ -331,21 +331,24 @@ class SmtSolver_v3():
         self.solver.assertFormula(unique_col_constraint)
         #print(unique_col_constraint)
 
-    #assign consecutive rule to a single cell
+
+    #consecutive rule to for single cell for whole row and column
     def consecutive_single_rule(self, row, col):
         #black cell -> no straights
         if int(self.colorstring[row * self.matrix_size + col]) == 1:
             return
+        
         #find straight with cell in column
         straight = []    
         for y in range(self.matrix_size):   
-            black = True if int(self.colorstring[row * self.matrix_size + y]) == 1 else False
+            black = self.find_color(row,y)
 
             if not black:
                 straight.append(self.value_matrix[row][y])
             else:
                 if len(straight) > 1: 
                     self.enforce_consecutive(straight, "row", row)
+                    straight = []
     
         if len(straight) > 1: 
             self.enforce_consecutive(straight, "row", row)
@@ -354,24 +357,25 @@ class SmtSolver_v3():
         #find straight with cell in row
         straight = []  
         for x in range(self.matrix_size):        
-            black = True if int(self.colorstring[x * self.matrix_size + col]) == 1 else False
+            black = self.find_color(x,col)
 
             if not black: 
                 straight.append(self.value_matrix[x][col])
             else: 
                 if len(straight) > 1: 
                     self.enforce_consecutive(straight, "col", col)
+                    straight = []
 
         if len(straight) > 1: 
             self.enforce_consecutive(straight, "col", col)
+            straight = []
 
-
-
+    #finds only the straight in row and column including the cell
     def straight_single_rule(self, row, col):
 
         straight = []       
         for y in range(col, -1, -1):   
-            black = True if int(self.colorstring[row * self.matrix_size + y]) == 1 else False
+            black = self.find_color(row,y)
 
             if not black:
                 straight.append(self.value_matrix[row][y])
@@ -379,8 +383,7 @@ class SmtSolver_v3():
                break
         
         for y in range(col + 1, self.matrix_size):   
-            black = True if int(self.colorstring[row * self.matrix_size + y]) == 1 else False
-
+            black = self.find_color(row,y)
             if not black:
                 straight.append(self.value_matrix[row][y])
             else:
@@ -393,7 +396,7 @@ class SmtSolver_v3():
 
         straight = []
         for x in range(row, -1, -1):   
-            black = True if int(self.colorstring[x * self.matrix_size + col]) == 1 else False
+            black = self.find_color(x,col)
 
             if not black:
                 straight.append(self.value_matrix[x][col])
@@ -401,7 +404,7 @@ class SmtSolver_v3():
                break
         
         for x in range(row + 1, self.matrix_size):   
-            black = True if int(self.colorstring[x * self.matrix_size + col]) == 1 else False
+            black = self.find_color(x,col)
 
             if not black:
                 straight.append(self.value_matrix[x][col])
@@ -460,7 +463,7 @@ class SmtSolver_v3():
                 if possible_values:
                     possibilities[(x, y)] = possible_values
 
-    #functionality for the Helpbutton
+    #functionality for the Helpbutton final
     def find_possibilties(self, temp_puzzlestring):
         #setup for solver
         self.setup(temp_puzzlestring)
@@ -479,7 +482,8 @@ class SmtSolver_v3():
 
                     self.solver.push()
                     self.unique_single_rule(x,y)
-                    self.straight_single_rule(x,y)
+                    #self.straight_single_rule(x,y)
+                    self.consecutive_single_rule(x,y)
 
                     cell = self.value_matrix[x][y]
                     possible_values = []
