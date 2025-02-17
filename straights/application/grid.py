@@ -184,6 +184,15 @@ class Grid(ctk.CTkFrame):
                         cell.color = "red"
                         cell.configure(text_color = "red")
 
+    def find_errors(self):
+        for x in range(self.matrix_size):
+            for y in range(self.matrix_size):
+                solution = self.matrix.grid[x][y].solution
+                cell = self.cells[x, y]
+                if cell.get() and cell.locked == False:
+                    if solution != int(cell.get()[0]):
+                        return True
+        return False
     
     #updates cell to correct value
     def reveal_cell_solution(self):

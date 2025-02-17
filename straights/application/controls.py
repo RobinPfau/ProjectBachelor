@@ -19,7 +19,7 @@ class Controls(ctk.CTkFrame):
         self.solutions = None
         self.matrix_size = self.grid.matrix_size   
         self.converter = Converter()
-
+        self.puzzlestring = "0"*162
         self.create_numpad(colour)
         self.create_control_buttons()
         #self.create_loading()
@@ -76,8 +76,8 @@ class Controls(ctk.CTkFrame):
         self.button_help = ctk.CTkButton(frame, width = 100, text = "HELP" ,command=  lambda: self.on_press_help())
         self.button_help.grid(row = 2, column = 0, fill = None, pady = 10, padx =5)
 
-        self.button_help = ctk.CTkButton(frame, width = 100, text = "RESTART" ,command=  lambda: self.on_press_restart())
-        self.button_help.grid(row = 2, column = 1, fill = None, pady = 10, padx =5)
+        self.button_restart = ctk.CTkButton(frame, width = 100, text = "RESTART" ,command=  lambda: self.on_press_restart())
+        self.button_restart.grid(row = 2, column = 1, fill = None, pady = 10, padx =5)
 
 
         frame.pack(expand = False, fill = None, anchor = "center", padx = 10, pady = 10)
@@ -288,25 +288,30 @@ class Controls(ctk.CTkFrame):
 
     # TODO: offer a not yet defined help
     def on_press_help(self):
+        if self.puzzlestring != "0"*162:
+            if self.grid.find_errors():
+                self.parent.display.update_display("Fix Errors first")
+                return
+            solver = SmtSolver_v3()
+            puzzlestring = self.save_string()
+            possibilities_list = solver.find_possibilties(puzzlestring)
         
-        solver = SmtSolver_v3()
-        puzzlestring = self.save_string()
-        possibilities_list = solver.find_possibilties(puzzlestring)
-        
-        for (x, y), possibilities in possibilities_list.items():
-           if len(possibilities) == 1:
-                print(f"one solution in ({x}, {y})")
-                self.grid.cells[x,y].configure(fg_color = "teal")
-        self.parent.display.update_display("Try marked cells")
-        return
+            for (x, y), possibilities in possibilities_list.items():
+                if len(possibilities) == 1:
+                    print(f"one solution in ({x}, {y})")
+                    self.grid.cells[x,y].configure(fg_color = "teal")
+            self.parent.display.update_display("Try marked cells")
     
-
+    
     #restarts the current puzzle
     def on_press_restart(self):
-        self.load_puzzle(self.converter.convert(self.puzzlestring))
-        self.solutions = self.solve()
-        if self.solutions:
-            self.grid.save_solution(self.solutions)
+        if self.puzzlestring != "0"*162:
+            self.load_puzzle(self.converter.convert(self.puzzlestring))
+            self.solutions = self.solve()
+            if self.solutions:
+                self.grid.save_solution(self.solutions)
+                self.parent.display.update_display("Welcome to str8ts")
+
       
     #starts the creative mode, disables map selection  
     def on_press_creative_mode(self):
