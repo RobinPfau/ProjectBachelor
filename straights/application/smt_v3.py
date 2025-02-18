@@ -393,7 +393,6 @@ class SmtSolver_v3():
             self.enforce_consecutive(straight, "row", row)
             #print(f"straight in row {row} of lentgh {len(straight)}")
 
-
         straight = []
         for x in range(row, -1, -1):   
             black = self.find_color(x,col)
@@ -415,7 +414,7 @@ class SmtSolver_v3():
             self.enforce_consecutive(straight, "col", col)
            #print(f"straight in col {col} of lentgh {len(straight)}")
 
-    #relic from creatorv2
+    #relic needed by creatorv2
     def solve_single(self, puzzlestring, x, y):
 
         self.setup(puzzlestring)
@@ -433,7 +432,7 @@ class SmtSolver_v3():
         else:
             print("no cell value possible")
 
-    #functionality for the helpbutton v2
+    #functionality for the helpbutton v2 RELIC
     #find all possible values for all cells
     def find_next_cells(self, puzzlestring):
 
@@ -482,8 +481,8 @@ class SmtSolver_v3():
 
                     self.solver.push()
                     self.unique_single_rule(x,y)
-                    #self.straight_single_rule(x,y)
-                    self.consecutive_single_rule(x,y)
+                    #self.straight_single_rule(x,y)     # help button only cell
+                    self.consecutive_single_rule(x,y)   # help button whole row and column
 
                     cell = self.value_matrix[x][y]
                     possible_values = []

@@ -32,7 +32,7 @@ class App (ctk.CTk):
 
         #placeholder start screen
         puzzlelist = self.converter.convert( "0"*162)
-        #puzzlelist = self.converter.convert(self.puzzles["small"]["easy"]["#1"])
+        #puzzlelist = self.converter.convert(self.puzzles["small"]["easy"]["#1"])    # add to load a puzzle directly
 
         #create GUI
         self.grid = Grid(parent = self, x = 0, y = 0, rwidth = 0.65, rheight = 1, puzzlelist = puzzlelist)

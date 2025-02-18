@@ -35,10 +35,10 @@ class Controls(ctk.CTkFrame):
     
         for row in range(3):
              for col in range(3):
-                
+                #creates the grid for numpad
                 frame.grid_rowconfigure(row, weight=1)
                 frame.grid_columnconfigure(col, weight=1)
-
+                #creates buttons for numpad
                 button = ctk.CTkButton(frame, width = 80, height = 70, fg_color = colour, text = self.button_number, font = ("Arial", 40), command=lambda number= self.button_number: self.on_press_number(number))
                 self.button_number = self.button_number +1
                
@@ -47,7 +47,7 @@ class Controls(ctk.CTkFrame):
        
         frame.pack(expand = False, fill = None, anchor = "center", padx = 10, pady = 10)
 
-    #creates the delete button and maybe more
+    #creates the control buttons
     def create_control_buttons(self):
 
         frame = ctk.CTkFrame(self, )
@@ -72,7 +72,7 @@ class Controls(ctk.CTkFrame):
 
         self.button_reveal = ctk.CTkButton(frame, width = 100, text = "REVEAL" ,command=  lambda: self.on_press_reveal())
         self.button_reveal.grid(row = 1, column = 0, fill = None, pady = 10, padx =5)
-        #creates the help button
+      
         self.button_help = ctk.CTkButton(frame, width = 100, text = "HELP" ,command=  lambda: self.on_press_help())
         self.button_help.grid(row = 2, column = 0, fill = None, pady = 10, padx =5)
 
@@ -85,8 +85,7 @@ class Controls(ctk.CTkFrame):
         #button_test = ctk.CTkButton(self, text = "TEST" ,command=  lambda: self.on_press_test())
         #button_test.pack(padx = 10, pady= 10)
 
-    #creates the menues used for loading puzzles
-
+    #creates the menues used for loading puzzles and generating puzzles
     def create_select(self):
      
         frame = ctk.CTkFrame(self)
@@ -187,7 +186,6 @@ class Controls(ctk.CTkFrame):
         selected_puzzle = self.converter.convert(self.puzzlestring)
         
         self.parent.display.update_display(f"{selected_main}/{sub_cat}")
-        print(f"Selected: {selected_main}/{sub_cat}")
 
         self.load_puzzle(selected_puzzle)
 
@@ -238,8 +236,6 @@ class Controls(ctk.CTkFrame):
             if self.grid.matrix.grid[focused_cell.x][focused_cell.y].value != 0 :
                 focused_cell.delete(0, "end")
                 self.grid.matrix.grid[focused_cell.x][focused_cell.y].value = 0
-                print(self.grid.matrix.grid[focused_cell.x][focused_cell.y].value)
-                print("löscherbutton")
         else: 
             print("no active cell")
     
@@ -276,7 +272,7 @@ class Controls(ctk.CTkFrame):
                             cell.configure(fg_color= "white")
             self.parent.display.update_display("solution correct")
         else: 
-            print("error solution none")     
+            self.parent.display.update_display("no solution") 
 
     #checks if the active sell holds the correct value
     def on_press_check(self):
@@ -290,7 +286,7 @@ class Controls(ctk.CTkFrame):
     def on_press_help(self):
         if self.puzzlestring != "0"*162:
             if self.grid.find_errors():
-                self.parent.display.update_display("Fix Errors first")
+                self.parent.display.update_display("Try Check first")
                 return
             solver = SmtSolver_v3()
             puzzlestring = self.save_string()
@@ -313,7 +309,7 @@ class Controls(ctk.CTkFrame):
                 self.parent.display.update_display("Welcome to str8ts")
 
       
-    #starts the creative mode, disables map selection  
+    #swaps creative mode on and off
     def on_press_creative_mode(self):
         if self.grid.creative_mode == True:
             self.button_swap_color.grid_forget()
@@ -366,8 +362,8 @@ class Controls(ctk.CTkFrame):
         if self.grid.selected_cell:
             self.grid.swap_color()
 
-    #TODO: for now prints the created puzzle as a string
-    #      should save the string to be loaded later
+
+    #  should save the string to be loaded later
     def on_press_save(self):
         self.save_string()
 
@@ -403,8 +399,6 @@ class Controls(ctk.CTkFrame):
         self.on_press_solve()
 
     def on_press_set_size(self, size):
-
-        print(size)
         
         new_size = int(size[0])
         self.matrix_size = new_size
@@ -434,7 +428,7 @@ class Controls(ctk.CTkFrame):
                 
             else:
                 self.parent.display.update_display("invalid entry")
-                print("wrong length or not number")
+                print("Error: Wrong length or not number")
             
         # Add widgets to the popup
         label = ctk.CTkLabel(popup, text="Enter a PuzzleString here:")
